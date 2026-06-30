@@ -100,15 +100,13 @@ it('provisions tenant with roles and admin user via TenantProvisioningService', 
 it('suspended tenant returns 403 on web request', function () {
     $tenant = Tenant::factory()->create(['status' => 'suspended', 'slug' => 'suspended-hosp']);
 
-    $response = $this->withServerVariables(['HTTP_HOST' => 'suspended-hosp.medcore.local'])
-        ->get('/login');
+    $response = $this->get('http://suspended-hosp.medcore.local/login');
 
     $response->assertStatus(403);
 });
 
 it('unknown tenant subdomain returns 404', function () {
-    $response = $this->withServerVariables(['HTTP_HOST' => 'unknown-xyz.medcore.local'])
-        ->get('/login');
+    $response = $this->get('http://unknown-xyz.medcore.local/login');
 
     $response->assertStatus(404);
 });

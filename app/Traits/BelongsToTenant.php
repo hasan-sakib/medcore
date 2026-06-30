@@ -12,13 +12,10 @@ trait BelongsToTenant
     {
         static::addGlobalScope(new TenantScope);
 
-        // Auto-stamp tenant_id on insert so callers never set it manually.
         static::creating(function (self $model) {
-            if (empty($model->tenant_id)) {
-                $manager = app(TenantManager::class);
-                if ($manager->hasCurrent()) {
-                    $model->tenant_id = $manager->current()->id;
-                }
+            $manager = app(TenantManager::class);
+            if ($manager->hasCurrent()) {
+                $model->tenant_id = $manager->current()->id;
             }
         });
     }
