@@ -34,11 +34,11 @@ class TenantController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name'           => ['required', 'string', 'max:255'],
-            'slug'           => ['required', 'string', 'max:63', 'alpha_dash', 'unique:tenants,slug'],
-            'plan'           => ['nullable', 'string', 'in:trial,basic,professional,enterprise'],
-            'admin_name'     => ['required', 'string', 'max:255'],
-            'admin_email'    => ['required', 'email', 'unique:users,email'],
+            'name' => ['required', 'string', 'max:255'],
+            'slug' => ['required', 'string', 'max:63', 'alpha_dash', 'unique:tenants,slug'],
+            'plan' => ['nullable', 'string', 'in:trial,basic,professional,enterprise'],
+            'admin_name' => ['required', 'string', 'max:255'],
+            'admin_email' => ['required', 'email', 'unique:users,email'],
             'admin_password' => ['required', 'string', 'min:12'],
         ]);
 
@@ -49,8 +49,8 @@ class TenantController extends Controller
                 'plan' => $validated['plan'] ?? 'trial',
             ],
             adminData: [
-                'name'     => $validated['admin_name'],
-                'email'    => $validated['admin_email'],
+                'name' => $validated['admin_name'],
+                'email' => $validated['admin_email'],
                 'password' => $validated['admin_password'],
             ]
         );
@@ -72,8 +72,8 @@ class TenantController extends Controller
     {
         $validated = $request->validate([
             'status' => ['required', 'in:active,suspended'],
-            'name'   => ['required', 'string', 'max:255'],
-            'plan'   => ['nullable', 'string', 'in:trial,basic,professional,enterprise'],
+            'name' => ['required', 'string', 'max:255'],
+            'plan' => ['nullable', 'string', 'in:trial,basic,professional,enterprise'],
         ]);
 
         $tenant->update($validated);

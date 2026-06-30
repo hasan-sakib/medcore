@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Tenant;
 use RuntimeException;
+use Spatie\Permission\PermissionRegistrar;
 
 /**
  * Single source of truth for the current request's tenant context.
@@ -17,15 +18,16 @@ use RuntimeException;
 class TenantManager
 {
     private ?Tenant $current = null;
-    private bool $bypassed  = false;
+
+    private bool $bypassed = false;
 
     public function setCurrent(Tenant $tenant): void
     {
-        $this->current  = $tenant;
+        $this->current = $tenant;
         $this->bypassed = false;
 
         // Configure spatie/laravel-permission teams mode
-        app(\Spatie\Permission\PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
+        app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
     }
 
     public function current(): Tenant
@@ -44,7 +46,7 @@ class TenantManager
 
     public function bypass(): void
     {
-        $this->current  = null;
+        $this->current = null;
         $this->bypassed = true;
     }
 
@@ -55,7 +57,7 @@ class TenantManager
 
     public function clearCurrent(): void
     {
-        $this->current  = null;
+        $this->current = null;
         $this->bypassed = false;
     }
 }

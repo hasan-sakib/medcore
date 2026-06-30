@@ -1,5 +1,13 @@
 <?php
 
+use App\Models\Appointment;
+use App\Models\ClinicalNote;
+use App\Models\Department;
+use App\Models\DoctorSchedule;
+use App\Models\Encounter;
+use App\Models\EncounterDiagnosis;
+use App\Models\Patient;
+use App\Models\Vital;
 use App\Traits\BelongsToTenant;
 
 /**
@@ -13,12 +21,18 @@ use App\Traits\BelongsToTenant;
  * phases are implemented.
  */
 
-// Phase 1 (Foundation)
+// Phase 1 (Foundation) + Phase 2 (EMR)
 $tenantModels = [
-    // Phase 2+ models go here as they are added:
-    // App\Models\Patient::class,
-    // App\Models\Encounter::class,
-    // ...
+    // Phase 2: EMR & Patient Lifecycle
+    Department::class,
+    DoctorSchedule::class,
+    Patient::class,
+    Appointment::class,
+    Encounter::class,
+    ClinicalNote::class,
+    Vital::class,
+    EncounterDiagnosis::class,
+    // Diagnosis::class is intentionally excluded — global ICD-10 reference, no tenant_id
 ];
 
 foreach ($tenantModels as $modelClass) {

@@ -2,12 +2,13 @@
     "compilerOptions": {
         "target": "ES2020",
         "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "allowJs": true,
         "module": "ESNext",
         "skipLibCheck": true,
-        "moduleResolution": "bundler",
+        "moduleResolution": "node",
         "allowImportingTsExtensions": true,
+        "esModuleInterop": true,
         "isolatedModules": true,
-        "moduleDetection": "force",
         "noEmit": true,
         "jsx": "react-jsx",
         "strict": true,
@@ -19,6 +20,6 @@
             "@/*": ["resources/js/*"]
         }
     },
-    "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx"],
+    "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx", "resources/js/**/*.d.ts"],
     "exclude": ["node_modules", "vendor", "public"]
 }

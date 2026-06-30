@@ -12,9 +12,10 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
         ]);
 
-        // In local/testing environments, seed demo tenants
+        // In local/testing environments, seed demo tenants and reference data
         if (app()->environment(['local', 'testing'])) {
             $this->call([
+                ICD10Seeder::class,
                 DemoTenantSeeder::class,
             ]);
         }

@@ -79,10 +79,10 @@ npm-build: ## Production frontend build
 # ── Code Quality ─────────────────────────────────────────────────────────────
 
 test: ## Run Pest test suite
-	$(COMPOSE) exec $(APP_SERVICE) vendor/bin/pest --parallel
+	$(COMPOSE) exec -e APP_ENV=testing $(APP_SERVICE) vendor/bin/pest --parallel
 
 test-coverage: ## Run Pest with coverage report
-	$(COMPOSE) exec $(APP_SERVICE) vendor/bin/pest --coverage --min=80
+	$(COMPOSE) exec -e APP_ENV=testing $(APP_SERVICE) vendor/bin/pest --coverage --min=80
 
 pint: ## Fix code style with Laravel Pint
 	$(COMPOSE) exec $(APP_SERVICE) vendor/bin/pint

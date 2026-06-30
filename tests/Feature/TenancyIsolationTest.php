@@ -4,7 +4,6 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Services\TenantProvisioningService;
 use App\Support\TenantManager;
-use Spatie\Permission\Models\Role;
 
 // RefreshDatabase (declared in Pest.php) runs all migrations automatically.
 // Spatie permission migrations must be published before running tests: make install
@@ -14,8 +13,8 @@ it('auto-stamps tenant_id on model creation', function () {
     app(TenantManager::class)->setCurrent($tenant);
 
     $user = User::create([
-        'name'     => 'Test User',
-        'email'    => 'test@example.com',
+        'name' => 'Test User',
+        'email' => 'test@example.com',
         'password' => bcrypt('password'),
     ]);
 
@@ -29,9 +28,9 @@ it('tenant A cannot read tenant B users', function () {
     // Create a user in Tenant B context
     app(TenantManager::class)->setCurrent($tenantB);
     User::create([
-        'name'      => 'Tenant B User',
-        'email'     => 'b@example.com',
-        'password'  => bcrypt('password'),
+        'name' => 'Tenant B User',
+        'email' => 'b@example.com',
+        'password' => bcrypt('password'),
         'tenant_id' => $tenantB->id,
     ]);
 
@@ -50,9 +49,9 @@ it('tenant A cannot write records with tenant B id', function () {
 
     // Even if caller explicitly passes tenant_id = B, it should be overridden by BelongsToTenant boot
     $user = User::create([
-        'name'      => 'Hijack Attempt',
-        'email'     => 'hijack@example.com',
-        'password'  => bcrypt('password'),
+        'name' => 'Hijack Attempt',
+        'email' => 'hijack@example.com',
+        'password' => bcrypt('password'),
         'tenant_id' => $tenantB->id, // attempted cross-tenant write
     ]);
 
@@ -66,9 +65,9 @@ it('withoutTenant bypasses the scope', function () {
 
     app(TenantManager::class)->setCurrent($tenantB);
     User::create([
-        'name'      => 'B User',
-        'email'     => 'b2@example.com',
-        'password'  => bcrypt('password'),
+        'name' => 'B User',
+        'email' => 'b2@example.com',
+        'password' => bcrypt('password'),
         'tenant_id' => $tenantB->id,
     ]);
 

@@ -1,5 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
+import { useCan } from '@/hooks/useCan';
 import type { PageProps } from '@/types';
 
 interface NavItem {
@@ -7,6 +8,7 @@ interface NavItem {
     href: string;
     icon: ReactNode;
     permission?: string;
+    role?: string;
 }
 
 const navigation: NavItem[] = [
@@ -20,11 +22,74 @@ const navigation: NavItem[] = [
             </svg>
         ),
     },
+    {
+        label: 'Patients',
+        href: '/patients',
+        permission: 'patients.view',
+        icon: (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        ),
+    },
+    {
+        label: 'Appointments',
+        href: '/appointments',
+        permission: 'appointments.view',
+        icon: (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+        ),
+    },
+    {
+        label: 'Encounters',
+        href: '/encounters',
+        permission: 'encounters.view',
+        icon: (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+        ),
+    },
+    {
+        label: 'Departments',
+        href: '/admin/departments',
+        role: 'tenant-admin',
+        icon: (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+        ),
+    },
+    {
+        label: 'Schedules',
+        href: '/admin/doctor-schedules',
+        role: 'tenant-admin',
+        icon: (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        ),
+    },
 ];
 
 export default function AppLayout({ children }: { children: ReactNode }) {
     const { auth, tenant, flash } = usePage<PageProps>().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { can, hasRole } = useCan();
+
+    const visibleNav = navigation.filter(item => {
+        if (!item.permission && !item.role) return true;
+        if (item.permission && can(item.permission)) return true;
+        if (item.role && hasRole(item.role)) return true;
+        return false;
+    });
 
     return (
         <div className="min-h-screen bg-gray-50 flex">
@@ -43,7 +108,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
                 {/* Nav */}
                 <nav className="flex-1 px-4 py-4 space-y-1">
-                    {navigation.map((item) => (
+                    {visibleNav.map((item) => (
                         <Link
                             key={item.href}
                             href={item.href}

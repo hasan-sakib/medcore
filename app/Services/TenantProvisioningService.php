@@ -70,8 +70,8 @@ class TenantProvisioningService
     {
         return DB::transaction(function () use ($tenantData, $adminData): Tenant {
             $tenant = Tenant::create([
-                'name'   => $tenantData['name'],
-                'slug'   => $tenantData['slug'] ?? Str::slug($tenantData['name']),
+                'name' => $tenantData['name'],
+                'slug' => $tenantData['slug'] ?? Str::slug($tenantData['name']),
                 'domain' => $tenantData['domain'] ?? null,
                 'status' => 'active',
                 'subscription_plan' => $tenantData['plan'] ?? 'trial',
@@ -119,9 +119,9 @@ class TenantProvisioningService
     private function createTenantAdmin(Tenant $tenant, array $adminData): User
     {
         $user = User::create([
-            'name'      => $adminData['name'],
-            'email'     => $adminData['email'],
-            'password'  => bcrypt($adminData['password']),
+            'name' => $adminData['name'],
+            'email' => $adminData['email'],
+            'password' => bcrypt($adminData['password']),
             'tenant_id' => $tenant->id,
         ]);
 

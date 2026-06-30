@@ -29,14 +29,14 @@ class HandleInertiaRequests extends Middleware
 
             'auth' => [
                 'user' => $request->user() ? [
-                    'id'    => $request->user()->id,
-                    'name'  => $request->user()->name,
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
                     'email' => $request->user()->email,
                 ] : null,
             ],
 
             'tenant' => $manager->hasCurrent() ? [
-                'id'   => $manager->current()->id,
+                'id' => $manager->current()->id,
                 'name' => $manager->current()->name,
                 'slug' => $manager->current()->slug,
             ] : null,
@@ -51,7 +51,7 @@ class HandleInertiaRequests extends Middleware
 
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
-                'error'   => fn () => $request->session()->get('error'),
+                'error' => fn () => $request->session()->get('error'),
             ],
         ];
     }

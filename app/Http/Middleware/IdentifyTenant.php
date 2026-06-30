@@ -21,12 +21,13 @@ class IdentifyTenant
 
     public function handle(Request $request, Closure $next): Response
     {
-        $host      = $request->getHost();
+        $host = $request->getHost();
         $subdomain = $this->extractSubdomain($host);
 
         // Central domains — Super Admin panel, platform-level API
         if ($this->isCentralDomain($subdomain)) {
             $this->manager->bypass();
+
             return $next($request);
         }
 
@@ -58,9 +59,9 @@ class IdentifyTenant
             return '__central__';
         }
 
-        $baseDomain  = config('app.base_domain', 'medcore.local');
-        $parts       = explode('.', $host);
-        $baseParts   = explode('.', $baseDomain);
+        $baseDomain = config('app.base_domain', 'medcore.local');
+        $parts = explode('.', $host);
+        $baseParts = explode('.', $baseDomain);
 
         if (count($parts) <= count($baseParts)) {
             return '__central__';

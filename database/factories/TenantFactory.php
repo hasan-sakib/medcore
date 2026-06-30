@@ -15,13 +15,13 @@ class TenantFactory extends Factory
         $name = $this->faker->company();
 
         return [
-            'name'              => $name,
-            'slug'              => Str::slug($name).'-'.Str::random(4),
-            'domain'            => null,
-            'status'            => 'active',
+            'name' => $name,
+            'slug' => Str::slug($name).'-'.Str::random(4),
+            'domain' => null,
+            'status' => 'active',
             'subscription_plan' => 'professional',
-            'settings'          => null,
-            'trial_ends_at'     => null,
+            'settings' => null,
+            'trial_ends_at' => null,
         ];
     }
 
@@ -33,7 +33,7 @@ class TenantFactory extends Factory
     public function trial(): static
     {
         return $this->state([
-            'status'        => 'trial',
+            'status' => 'trial',
             'trial_ends_at' => now()->addDays(30),
         ]);
     }

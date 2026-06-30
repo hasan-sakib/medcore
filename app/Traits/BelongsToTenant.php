@@ -2,9 +2,11 @@
 
 namespace App\Traits;
 
+use App\Models\Tenant;
 use App\Scopes\TenantScope;
 use App\Support\TenantManager;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait BelongsToTenant
 {
@@ -34,8 +36,8 @@ trait BelongsToTenant
         return static::withoutGlobalScope(TenantScope::class);
     }
 
-    public function tenant(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function tenant(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Tenant::class);
+        return $this->belongsTo(Tenant::class);
     }
 }

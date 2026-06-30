@@ -23,7 +23,7 @@
     </source>
 
     <php>
-        <env name="APP_ENV" value="testing"/>
+        <env name="APP_ENV" value="testing" force="true"/>
         <env name="APP_KEY" value="base64:2fl+Ktvkfl+Ktvkfl+Ktvkfl+Ktvkfl+Ktvkfl+Ktvk="/>
         <env name="APP_DEBUG" value="true"/>
         <env name="DB_CONNECTION" value="sqlite" force="true"/>
@@ -34,5 +34,8 @@
         <env name="BROADCAST_CONNECTION" value="log" force="true"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="PHI_ENCRYPTION_KEY" value="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="/>
+        <env name="PHI_BLIND_INDEX_KEY" value="BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB="/>
+        <env name="INERTIA_SSR_ENABLED" value="false"/>
     </php>
 </phpunit>

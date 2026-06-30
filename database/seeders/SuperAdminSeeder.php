@@ -17,8 +17,8 @@ class SuperAdminSeeder extends Seeder
         $superAdmin = User::firstOrCreate(
             ['email' => env('SUPER_ADMIN_EMAIL', 'admin@medcore.local')],
             [
-                'name'      => 'Platform Administrator',
-                'password'  => bcrypt(env('SUPER_ADMIN_PASSWORD', 'changeme-in-production!')),
+                'name' => 'Platform Administrator',
+                'password' => bcrypt(env('SUPER_ADMIN_PASSWORD', 'changeme-in-production!')),
                 'tenant_id' => null,
             ]
         );

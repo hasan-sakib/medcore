@@ -15,6 +15,7 @@ class TenantScope implements Scope
 
         if ($manager->hasCurrent()) {
             $builder->where($model->getQualifiedTenantIdColumn(), $manager->current()->id);
+
             return;
         }
 

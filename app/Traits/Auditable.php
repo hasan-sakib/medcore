@@ -32,20 +32,20 @@ trait Auditable
             'created' => ['after' => static::redactPhi(array_keys($model->getAttributes()))],
             'updated' => [
                 'before' => static::redactPhi(array_keys($model->getOriginal())),
-                'after'  => static::redactPhi(array_keys($model->getDirty())),
+                'after' => static::redactPhi(array_keys($model->getDirty())),
             ],
             'deleted' => ['before' => static::redactPhi(array_keys($model->getAttributes()))],
-            default   => [],
+            default => [],
         };
 
         AuditLog::withoutGlobalScopes()->create([
-            'tenant_id'       => $manager->hasCurrent() ? $manager->current()->id : null,
-            'user_id'         => Auth::id(),
-            'action'          => $event,
-            'auditable_type'  => get_class($model),
-            'auditable_id'    => $model->getKey(),
-            'changes'         => $changes,
-            'ip_address'      => Request::ip(),
+            'tenant_id' => $manager->hasCurrent() ? $manager->current()->id : null,
+            'user_id' => Auth::id(),
+            'action' => $event,
+            'auditable_type' => get_class($model),
+            'auditable_id' => $model->getKey(),
+            'changes' => $changes,
+            'ip_address' => Request::ip(),
         ]);
     }
 

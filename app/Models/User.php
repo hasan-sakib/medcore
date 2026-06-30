@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, Auditable, BelongsToTenant;
+    use Auditable, BelongsToTenant, HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
         'name',
@@ -34,8 +34,8 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at'       => 'datetime',
-            'password'                => 'hashed',
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
@@ -53,7 +53,7 @@ class User extends Authenticatable
     /**
      * Ensure spatie permission checks use the correct team (tenant) context.
      */
-    public function getPermissionsTeamId(): int|null
+    public function getPermissionsTeamId(): ?int
     {
         return $this->tenant_id;
     }
