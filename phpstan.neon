@@ -1,0 +1,14 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+    level: 6
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    ignoreErrors:
+        # Spatie permission dynamic roles/permissions
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::assignRole#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::hasRole#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::can#'

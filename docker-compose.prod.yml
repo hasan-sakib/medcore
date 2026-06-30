@@ -1,0 +1,59 @@
+# Production compose — use with: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+services:
+  nginx:
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/options-ssl-nginx.conf:/etc/nginx/options-ssl-nginx.conf:ro
+      - certbot-etc:/etc/letsencrypt:ro
+      - certbot-www:/var/www/certbot:ro
+
+  app:
+    build:
+      target: production
+    restart: always
+    volumes: []  # no bind-mount; code baked in image
+
+  queue:
+    build:
+      target: production
+    restart: always
+    volumes: []
+
+  scheduler:
+    build:
+      target: production
+    restart: always
+    volumes: []
+
+  reverb:
+    build:
+      target: production
+    restart: always
+    volumes: []
+
+  mysql:
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+
+  redis:
+    restart: always
+    command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
+
+  certbot:
+    image: certbot/dns-cloudflare:latest
+    restart: "no"
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+
+volumes:
+  certbot-etc:
+  certbot-www:

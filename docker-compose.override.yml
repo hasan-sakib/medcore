@@ -1,0 +1,25 @@
+# Development overrides — auto-loaded by docker compose up
+services:
+  vite:
+    image: node:20-alpine
+    working_dir: /var/www/html
+    command: ["sh", "-c", "npm install && npm run dev -- --host 0.0.0.0"]
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - medcore
+
+  app:
+    environment:
+      XDEBUG_MODE: "${XDEBUG_MODE:-off}"
+      XDEBUG_CONFIG: "client_host=host.docker.internal"
+    volumes:
+      - .:/var/www/html
+
+  nginx:
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - vite
