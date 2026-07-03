@@ -221,3 +221,163 @@ export type AppointmentSlot = {
     start: string; // ISO datetime
     end: string;
 };
+
+// ── Phase 3: Pharmacy, Inventory & Batch Tracking ──────────────────────────
+
+export interface Supplier {
+    id: number;
+    tenant_id: number;
+    name: string;
+    contact_name: string | null;
+    phone: string | null;
+    email: string | null;
+    address: string | null;
+    is_active: boolean;
+    medicine_batches_count?: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Medicine {
+    id: number;
+    tenant_id: number;
+    name: string;
+    generic_name: string | null;
+    sku: string;
+    category: string | null;
+    unit_type: 'tablet' | 'capsule' | 'ml' | 'unit' | 'vial';
+    strength: string | null;
+    min_stock_level: number;
+    reorder_level: number;
+    is_active: boolean;
+    stock_on_hand?: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface MedicineBatch {
+    id: number;
+    tenant_id: number;
+    medicine_id: number;
+    supplier_id: number | null;
+    purchase_order_id: number | null;
+    batch_number: string;
+    lot_number: string | null;
+    quantity_received: number;
+    quantity_on_hand: number;
+    unit_cost: number | null;
+    expiry_date: string;           // "YYYY-MM-DD"
+    manufactured_date: string | null;
+    received_at: string;
+    received_by: number | null;
+    status: 'active' | 'expired' | 'quarantined' | 'depleted';
+    medicine?: Medicine;
+    supplier?: Pick<Supplier, 'id' | 'name'> | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface StockMovement {
+    id: number;
+    tenant_id: number;
+    medicine_id: number;
+    batch_id: number;
+    movement_type: 'in' | 'out' | 'adjustment' | 'return' | 'waste';
+    quantity: number;              // signed: positive=in, negative=out
+    reference_type: string | null;
+    reference_id: number | null;
+    notes: string | null;
+    created_by: number;
+    medicine?: Pick<Medicine, 'id' | 'name' | 'sku'>;
+    batch?: Pick<MedicineBatch, 'id' | 'batch_number'>;
+    createdBy?: Pick<User, 'id' | 'name'>;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface PrescriptionItem {
+    id: number;
+    tenant_id: number;
+    prescription_id: number;
+    medicine_id: number;
+    dosage_instruction: string;
+    frequency: string;
+    duration_days: number | null;
+    quantity_prescribed: number;
+    quantity_dispensed: number;
+    notes: string | null;
+    medicine?: Pick<Medicine, 'id' | 'name' | 'sku' | 'unit_type' | 'strength'>;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Prescription {
+    id: number;
+    tenant_id: number;
+    patient_id: number;
+    encounter_id: number | null;
+    prescribed_by: number;
+    status: 'pending' | 'partially_filled' | 'filled' | 'cancelled';
+    notes: string | null;
+    prescribed_at: string;
+    expires_at: string | null;
+    patient?: Patient;
+    encounter?: Pick<Encounter, 'id' | 'encounter_date'> | null;
+    prescribedBy?: Pick<User, 'id' | 'name'>;
+    items?: PrescriptionItem[];
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+}
+
+export interface DispenseRecord {
+    id: number;
+    tenant_id: number;
+    prescription_id: number | null;
+    prescription_item_id: number | null;
+    patient_id: number;
+    medicine_id: number;
+    batch_id: number;
+    quantity_dispensed: number;
+    dispensed_by: number;
+    dispensed_at: string;
+    notes: string | null;
+    medicine?: Pick<Medicine, 'id' | 'name' | 'sku'>;
+    batch?: Pick<MedicineBatch, 'id' | 'batch_number' | 'expiry_date'>;
+    dispensedBy?: Pick<User, 'id' | 'name'>;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface PurchaseOrderItem {
+    id: number;
+    tenant_id: number;
+    purchase_order_id: number;
+    medicine_id: number;
+    quantity_ordered: number;
+    quantity_received: number;
+    unit_price: number;
+    medicine?: Pick<Medicine, 'id' | 'name' | 'sku' | 'unit_type'>;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface PurchaseOrder {
+    id: number;
+    tenant_id: number;
+    supplier_id: number | null;
+    po_number: string;
+    status: 'draft' | 'sent' | 'received' | 'cancelled';
+    notes: string | null;
+    ordered_at: string | null;
+    expected_delivery_date: string | null;
+    received_at: string | null;
+    created_by: number;
+    supplier?: Pick<Supplier, 'id' | 'name'> | null;
+    items?: PurchaseOrderItem[];
+    items_count?: number;
+    createdBy?: Pick<User, 'id' | 'name'>;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+}

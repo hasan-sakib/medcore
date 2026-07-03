@@ -3,10 +3,19 @@
 use App\Models\Appointment;
 use App\Models\ClinicalNote;
 use App\Models\Department;
+use App\Models\DispenseRecord;
 use App\Models\DoctorSchedule;
 use App\Models\Encounter;
 use App\Models\EncounterDiagnosis;
+use App\Models\Medicine;
+use App\Models\MedicineBatch;
 use App\Models\Patient;
+use App\Models\Prescription;
+use App\Models\PrescriptionItem;
+use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderItem;
+use App\Models\StockMovement;
+use App\Models\Supplier;
 use App\Models\Vital;
 use App\Traits\BelongsToTenant;
 
@@ -21,7 +30,7 @@ use App\Traits\BelongsToTenant;
  * phases are implemented.
  */
 
-// Phase 1 (Foundation) + Phase 2 (EMR)
+// Phase 1 (Foundation) + Phase 2 (EMR) + Phase 3 (Pharmacy)
 $tenantModels = [
     // Phase 2: EMR & Patient Lifecycle
     Department::class,
@@ -33,6 +42,17 @@ $tenantModels = [
     Vital::class,
     EncounterDiagnosis::class,
     // Diagnosis::class is intentionally excluded — global ICD-10 reference, no tenant_id
+
+    // Phase 3: Pharmacy, Perishable Inventory & Batch Tracking
+    Supplier::class,
+    Medicine::class,
+    PurchaseOrder::class,
+    PurchaseOrderItem::class,
+    MedicineBatch::class,
+    StockMovement::class,
+    Prescription::class,
+    PrescriptionItem::class,
+    DispenseRecord::class,
 ];
 
 foreach ($tenantModels as $modelClass) {

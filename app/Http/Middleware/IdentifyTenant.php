@@ -6,6 +6,7 @@ use App\Models\Tenant;
 use App\Support\TenantManager;
 use Closure;
 use Illuminate\Http\Request;
+use Spatie\Permission\PermissionRegistrar;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -45,6 +46,8 @@ class IdentifyTenant
         }
 
         $this->manager->setCurrent($tenant);
+
+        app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
 
         return $next($request);
     }

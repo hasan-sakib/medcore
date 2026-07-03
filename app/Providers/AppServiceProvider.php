@@ -4,12 +4,18 @@ namespace App\Providers;
 
 use App\Models\Appointment;
 use App\Models\ClinicalNote;
+use App\Models\DispenseRecord;
 use App\Models\Encounter;
+use App\Models\Medicine;
 use App\Models\Patient;
+use App\Models\Prescription;
 use App\Policies\AppointmentPolicy;
 use App\Policies\ClinicalNotePolicy;
+use App\Policies\DispenseRecordPolicy;
 use App\Policies\EncounterPolicy;
+use App\Policies\MedicinePolicy;
 use App\Policies\PatientPolicy;
+use App\Policies\PrescriptionPolicy;
 use App\Support\TenantManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +37,11 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Appointment::class, AppointmentPolicy::class);
         Gate::policy(Encounter::class, EncounterPolicy::class);
         Gate::policy(ClinicalNote::class, ClinicalNotePolicy::class);
+
+        // Phase 3 policy registration
+        Gate::policy(Medicine::class, MedicinePolicy::class);
+        Gate::policy(Prescription::class, PrescriptionPolicy::class);
+        Gate::policy(DispenseRecord::class, DispenseRecordPolicy::class);
 
         // Strict mode in non-production to surface N+1, lazy-loading, mass-assignment issues early
         Model::shouldBeStrict(! $this->app->isProduction());
