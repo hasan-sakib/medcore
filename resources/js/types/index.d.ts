@@ -381,3 +381,102 @@ export interface PurchaseOrder {
     updated_at: string;
     deleted_at: string | null;
 }
+
+// ── Phase 4: Beds, Wards, Operating Rooms ─────────────────────────────────
+
+export interface Ward {
+    id: number;
+    tenant_id: number;
+    name: string;
+    code: string;
+    floor: string | null;
+    ward_type: 'general' | 'icu' | 'pediatric' | 'maternity' | 'surgical' | 'oncology' | 'psychiatric';
+    is_active: boolean;
+    available_beds?: number;
+    total_beds?: number;
+    beds?: BedWithAllocation[];
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Room {
+    id: number;
+    tenant_id: number;
+    ward_id: number;
+    room_number: string;
+    room_type: 'general' | 'private' | 'semi_private' | 'icu' | 'isolation';
+    is_active: boolean;
+    ward?: Pick<Ward, 'id' | 'name'>;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface BedAllocation {
+    id: number;
+    tenant_id: number;
+    bed_id: number;
+    patient_id: number;
+    encounter_id: number | null;
+    allocated_by: number;
+    admitted_at: string;
+    discharged_at: string | null;
+    discharge_reason: string | null;
+    notes: string | null;
+    patient?: Pick<Patient, 'id' | 'first_name' | 'last_name'>;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface BedWithAllocation {
+    id: number;
+    tenant_id: number;
+    ward_id: number;
+    room_id: number | null;
+    bed_number: string;
+    bed_type: 'standard' | 'icu' | 'pediatric' | 'bariatric' | 'electric';
+    status: 'available' | 'occupied' | 'maintenance' | 'reserved' | 'cleaning';
+    is_active: boolean;
+    ward?: Pick<Ward, 'id' | 'name'>;
+    room?: Pick<Room, 'id' | 'room_number'> | null;
+    current_allocation: BedAllocation | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface WardWithBeds extends Ward {
+    beds: BedWithAllocation[];
+    available_beds: number;
+    total_beds: number;
+}
+
+export interface OperatingRoom {
+    id: number;
+    tenant_id: number;
+    name: string;
+    room_number: string;
+    or_type: 'general' | 'cardiac' | 'ortho' | 'neuro' | 'emergency' | 'obstetric';
+    status: 'available' | 'scheduled' | 'in_use' | 'maintenance';
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface OrSchedule {
+    id: number;
+    tenant_id: number;
+    operating_room_id: number;
+    encounter_id: number | null;
+    surgeon_id: number;
+    procedure_name: string;
+    scheduled_start: string;
+    scheduled_end: string;
+    actual_start: string | null;
+    actual_end: string | null;
+    status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
+    notes: string | null;
+    created_by: number;
+    surgeon?: Pick<User, 'id' | 'name'>;
+    encounter?: Pick<Encounter, 'id' | 'encounter_date'> | null;
+    created_at: string;
+    updated_at: string;
+}

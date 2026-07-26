@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
                 ICD10Seeder::class,
                 DemoTenantSeeder::class,
                 PharmacySeeder::class,
+                BedSeeder::class,
             ]);
         }
     }

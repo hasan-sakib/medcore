@@ -146,6 +146,33 @@ const navSections: NavSection[] = [
             },
         ],
     },
+    {
+        heading: 'Resource Management',
+        items: [
+            {
+                label: 'Bed Board',
+                href: '/beds/board',
+                permission: 'beds.view',
+                icon: (
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                            d="M3 12h18M3 6h18M3 18h18M7 6v12M17 6v12" />
+                    </svg>
+                ),
+            },
+            {
+                label: 'Operating Rooms',
+                href: '/operating-rooms',
+                permission: 'operating-rooms.view',
+                icon: (
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6M4.929 4.929l1.414 1.414M17.657 17.657l1.414 1.414M4.929 19.071l1.414-1.414M17.657 6.343l1.414-1.414" />
+                    </svg>
+                ),
+            },
+        ],
+    },
 ];
 
 export default function AppLayout({ children }: { children: ReactNode }) {

@@ -22,10 +22,11 @@ class TenantProvisioningService
             'encounters.view', 'encounters.create', 'encounters.edit',
             'clinical-notes.create', 'clinical-notes.edit',
             'prescriptions.create', 'appointments.view', 'appointments.edit',
+            'operating-rooms.view', 'or-schedules.manage',
         ],
         'nurse' => [
             'patients.view', 'encounters.view', 'vitals.create', 'vitals.edit',
-            'beds.view', 'bed-allocations.create',
+            'beds.view', 'bed-allocations.create', 'operating-rooms.view',
         ],
         'receptionist' => [
             'patients.view', 'patients.create',
@@ -64,6 +65,7 @@ class TenantProvisioningService
         'stock-movements.view',
         'beds.view', 'bed-allocations.create', 'bed-allocations.edit',
         'wards.view',
+        'operating-rooms.view', 'or-schedules.manage',
         'invoices.view', 'invoices.create', 'invoices.edit',
         'payments.create',
         'claims.view', 'claims.create',

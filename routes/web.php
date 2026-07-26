@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\BedAllocationController;
+use App\Http\Controllers\BedBoardController;
+use App\Http\Controllers\OperatingRoomController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ClinicalNoteController;
 use App\Http\Controllers\DashboardController;
@@ -131,6 +134,42 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('permission:stock-movements.view')
         ->group(function () {
             Route::get('stock-movements', [StockMovementController::class, 'index'])->name('stock-movements.index');
+        });
+
+    // ── Phase 4: Bed Board ────────────────────────────────────────────────────
+    Route::middleware('permission:beds.view')
+        ->group(function () {
+            Route::get('beds/board', [BedBoardController::class, 'index'])->name('beds.board');
+            Route::post('beds/{bed}/available', [BedBoardController::class, 'markAvailable'])
+                ->name('beds.available');
+            Route::post('beds/{bed}/maintenance', [BedBoardController::class, 'toggleMaintenance'])
+                ->name('beds.maintenance');
+        });
+
+    Route::middleware('permission:bed-allocations.create')
+        ->group(function () {
+            Route::post('bed-allocations', [BedAllocationController::class, 'store'])
+                ->name('bed-allocations.store');
+        });
+
+    Route::middleware('permission:bed-allocations.edit')
+        ->group(function () {
+            Route::patch('bed-allocations/{bedAllocation}/discharge', [BedAllocationController::class, 'discharge'])
+                ->name('bed-allocations.discharge');
+        });
+
+    // ── Phase 4: Operating Rooms ─────────────────────────────────────────────
+    Route::middleware('permission:operating-rooms.view')
+        ->group(function () {
+            Route::get('operating-rooms', [OperatingRoomController::class, 'index'])->name('operating-rooms.index');
+        });
+
+    Route::middleware('permission:or-schedules.manage')
+        ->group(function () {
+            Route::post('operating-rooms/schedules', [OperatingRoomController::class, 'storeSchedule'])
+                ->name('or-schedules.store');
+            Route::patch('operating-rooms/schedules/{orSchedule}/status', [OperatingRoomController::class, 'updateScheduleStatus'])
+                ->name('or-schedules.update-status');
         });
 
     // ── Phase 2: Encounters + nested sub-resources ───────────────────────────
