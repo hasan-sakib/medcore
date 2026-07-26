@@ -7,6 +7,7 @@ use App\Models\MedicineBatch;
 use App\Models\StockMovement;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Support\TenantManager;
 use Illuminate\Database\Seeder;
 
 class PharmacySeeder extends Seeder
@@ -21,9 +22,12 @@ class PharmacySeeder extends Seeder
 
     public function run(): void
     {
+        $manager = app(TenantManager::class);
         $tenants = Tenant::where('status', 'active')->get();
 
         foreach ($tenants as $tenant) {
+            $manager->setCurrent($tenant);
+
             foreach (self::COMMON_MEDICINES as $medicineData) {
                 $medicine = Medicine::firstOrCreate(
                     ['tenant_id' => $tenant->id, 'sku' => $medicineData['sku']],
@@ -59,6 +63,8 @@ class PharmacySeeder extends Seeder
                     'created_by' => $adminUserId,
                 ]);
             }
+
+            $manager->clearCurrent();
         }
     }
 }

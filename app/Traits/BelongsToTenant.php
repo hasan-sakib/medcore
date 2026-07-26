@@ -16,7 +16,7 @@ trait BelongsToTenant
 
         static::creating(function (self $model) {
             $manager = app(TenantManager::class);
-            if ($manager->hasCurrent()) {
+            if (! $model->tenant_id && $manager->hasCurrent()) {
                 $model->tenant_id = $manager->current()->id;
             }
         });
