@@ -21,7 +21,7 @@ class TenantProvisioningService
             'patients.view', 'patients.edit',
             'encounters.view', 'encounters.create', 'encounters.edit',
             'clinical-notes.create', 'clinical-notes.edit',
-            'prescriptions.create', 'appointments.view', 'appointments.edit',
+            'prescriptions.view', 'prescriptions.create', 'appointments.view', 'appointments.edit',
             'operating-rooms.view', 'or-schedules.manage',
         ],
         'nurse' => [
@@ -64,10 +64,11 @@ class TenantProvisioningService
         'suppliers.view', 'suppliers.manage',
         'stock-movements.view',
         'beds.view', 'bed-allocations.create', 'bed-allocations.edit',
-        'wards.view',
-        'operating-rooms.view', 'or-schedules.manage',
+        'wards.view', 'wards.manage',
+        'operating-rooms.view', 'operating-rooms.manage', 'or-schedules.manage',
         'invoices.view', 'invoices.create', 'invoices.edit',
         'payments.create',
+        'charge-items.manage', 'tax-configs.manage', 'insurance-policies.manage',
         'claims.view', 'claims.create',
         'users.view', 'users.create', 'users.edit', 'users.delete',
         'roles.manage',
@@ -93,6 +94,24 @@ class TenantProvisioningService
 
             return $tenant->fresh();
         });
+    }
+
+    /**
+     * Re-apply the permission catalogue and default role grants to every existing
+     * tenant (used when new permissions are introduced after tenants were provisioned).
+     */
+    public function syncAllTenants(): int
+    {
+        $this->seedPermissions();
+        $tenants = Tenant::withoutGlobalScopes()->get();
+
+        foreach ($tenants as $tenant) {
+            $this->seedRoles($tenant);
+        }
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        return $tenants->count();
     }
 
     private function seedPermissions(): void

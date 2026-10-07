@@ -34,18 +34,18 @@ class BedStatusChanged implements ShouldBroadcast
     public function broadcastWith(): array
     {
         $payload = [
-            'id'         => $this->bed->id,
+            'id' => $this->bed->id,
             'bed_number' => $this->bed->bed_number,
-            'bed_type'   => $this->bed->bed_type,
-            'ward_id'    => $this->bed->ward_id,
-            'room_id'    => $this->bed->room_id,
-            'status'     => $this->bed->status,
+            'bed_type' => $this->bed->bed_type,
+            'ward_id' => $this->bed->ward_id,
+            'room_id' => $this->bed->room_id,
+            'status' => $this->bed->status,
         ];
 
         if ($this->allocation) {
             $payload['patient'] = [
-                'id'         => $this->allocation->patient_id,
-                'name'       => optional($this->allocation->patient)->first_name.' '.optional($this->allocation->patient)->last_name,
+                'id' => $this->allocation->patient_id,
+                'name' => optional($this->allocation->patient)->first_name.' '.optional($this->allocation->patient)->last_name,
                 'admitted_at' => $this->allocation->admitted_at?->toISOString(),
             ];
         }

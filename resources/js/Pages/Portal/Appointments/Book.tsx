@@ -19,7 +19,7 @@ export default function BookAppointment({ departments, doctors }: Props) {
         form.setData('department_id', deptId);
         form.setData('doctor_id', '');
         if (deptId) {
-            router.reload({ data: { department_id: deptId }, only: ['doctors'], preserveState: true });
+            router.reload({ data: { department_id: deptId }, only: ['doctors'] });
         }
     };
 

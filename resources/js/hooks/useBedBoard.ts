@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { BedWithAllocation } from '@/types';
+import type { BedAllocation, BedWithAllocation } from '@/types';
 
 interface BedStatusPayload {
     id: number;
@@ -35,15 +35,17 @@ export function useBedBoard(tenantId: number, initialBeds: BedWithAllocation[]) 
                     next.set(payload.id, {
                         ...existing,
                         status: payload.status as BedWithAllocation['status'],
+                        // The broadcast carries only the patient summary, so the allocation
+                        // is merged over whatever the board already knows about it.
                         current_allocation: payload.patient
-                            ? {
+                            ? ({
                                   ...existing.current_allocation,
                                   patient: {
                                       id: payload.patient.id,
                                       first_name: payload.patient.name.split(' ')[0] ?? '',
                                       last_name: payload.patient.name.split(' ').slice(1).join(' '),
                                   },
-                              }
+                              } as BedAllocation)
                             : null,
                     });
                 }

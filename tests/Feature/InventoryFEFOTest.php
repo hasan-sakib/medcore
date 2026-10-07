@@ -1,11 +1,14 @@
 <?php
 
+use App\Models\DispenseRecord;
 use App\Models\Medicine;
 use App\Models\MedicineBatch;
+use App\Models\StockMovement;
 use App\Models\User;
 use App\Services\InventoryService;
 use App\Services\TenantProvisioningService;
 use App\Support\TenantManager;
+use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {
     $provisioner = app(TenantProvisioningService::class);
@@ -144,4 +147,73 @@ it('does not deduct from expired batches', function () {
 
     expect(fn () => $this->inventory->deductStockFEFO($this->medicine->id, 1, $this->pharmacist->id))
         ->toThrow(RuntimeException::class, 'Insufficient stock');
+});
+
+it('refuses to oversell: a second deduction that exceeds the remaining stock fails and changes nothing', function () {
+    app(TenantManager::class)->setCurrent($this->tenant);
+
+    $batchA = MedicineBatch::create([
+        'medicine_id' => $this->medicine->id,
+        'batch_number' => 'OVS-A',
+        'quantity_received' => 6,
+        'quantity_on_hand' => 6,
+        'expiry_date' => now()->addMonths(2)->toDateString(),
+        'status' => 'active',
+    ]);
+    $batchB = MedicineBatch::create([
+        'medicine_id' => $this->medicine->id,
+        'batch_number' => 'OVS-B',
+        'quantity_received' => 4,
+        'quantity_on_hand' => 4,
+        'expiry_date' => now()->addMonths(8)->toDateString(),
+        'status' => 'active',
+    ]);
+
+    // Two sequential "customers" each want 7 of the 10 units on hand.
+    $this->inventory->deductStockFEFO($this->medicine->id, 7, $this->pharmacist->id);
+
+    $movementsAfterFirst = StockMovement::count();
+    $dispensesAfterFirst = DispenseRecord::count();
+
+    expect(fn () => $this->inventory->deductStockFEFO($this->medicine->id, 7, $this->pharmacist->id))
+        ->toThrow(RuntimeException::class, 'Insufficient stock. Available: 3, Requested: 7.');
+
+    // Stock was not driven negative and the failed attempt left no trace.
+    expect($batchA->fresh()->quantity_on_hand)->toBe(0);
+    expect($batchB->fresh()->quantity_on_hand)->toBe(3);
+    expect(StockMovement::count())->toBe($movementsAfterFirst);
+    expect(DispenseRecord::count())->toBe($dispensesAfterFirst);
+
+    // The remaining 3 can still be dispensed exactly, and then nothing is left.
+    $this->inventory->deductStockFEFO($this->medicine->id, 3, $this->pharmacist->id);
+    expect(MedicineBatch::sum('quantity_on_hand'))->toBe(0);
+
+    expect(fn () => $this->inventory->deductStockFEFO($this->medicine->id, 1, $this->pharmacist->id))
+        ->toThrow(RuntimeException::class, 'Insufficient stock');
+});
+
+it('rolls back the whole deduction when it fails part-way inside an outer transaction', function () {
+    app(TenantManager::class)->setCurrent($this->tenant);
+
+    $batch = MedicineBatch::create([
+        'medicine_id' => $this->medicine->id,
+        'batch_number' => 'OVS-C',
+        'quantity_received' => 5,
+        'quantity_on_hand' => 5,
+        'expiry_date' => now()->addMonths(2)->toDateString(),
+        'status' => 'active',
+    ]);
+
+    try {
+        DB::transaction(function () {
+            $this->inventory->deductStockFEFO($this->medicine->id, 4, $this->pharmacist->id);
+            $this->inventory->deductStockFEFO($this->medicine->id, 4, $this->pharmacist->id); // oversell -> throws
+        });
+    } catch (RuntimeException) {
+        // expected
+    }
+
+    expect($batch->fresh()->quantity_on_hand)->toBe(5);
+    expect(DispenseRecord::count())->toBe(0);
+    expect(StockMovement::where('movement_type', 'out')->count())->toBe(0);
 });

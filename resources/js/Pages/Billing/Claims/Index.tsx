@@ -25,7 +25,7 @@ const STATUS_CHIP: Record<string, string> = {
 };
 
 function UpdateStatusModal({ claim, onClose }: { claim: ClaimRow; onClose: () => void }) {
-    const form = useForm({
+    const form = useForm<{ status: string; amount_approved: string; amount_paid: string; notes: string }>({
         status:          claim.status,
         amount_approved: String(claim.amount_approved ?? ''),
         amount_paid:     String(claim.amount_paid ?? ''),

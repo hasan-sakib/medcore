@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Department;
 use App\Models\DoctorSchedule;
 use App\Models\User;
+use App\Support\TenantRule;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,8 +30,8 @@ class DoctorScheduleController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id'],
-            'department_id' => ['required', 'integer', 'exists:departments,id'],
+            'user_id' => ['required', 'integer', TenantRule::exists('users', 'id')],
+            'department_id' => ['required', 'integer', TenantRule::exists('departments', 'id')],
             'day_of_week' => ['required', 'integer', 'between:0,6'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
@@ -48,8 +49,8 @@ class DoctorScheduleController extends Controller
     public function update(Request $request, DoctorSchedule $doctorSchedule): RedirectResponse
     {
         $validated = $request->validate([
-            'user_id' => ['sometimes', 'integer', 'exists:users,id'],
-            'department_id' => ['sometimes', 'integer', 'exists:departments,id'],
+            'user_id' => ['sometimes', 'integer', TenantRule::exists('users', 'id')],
+            'department_id' => ['sometimes', 'integer', TenantRule::exists('departments', 'id')],
             'day_of_week' => ['sometimes', 'integer', 'between:0,6'],
             'start_time' => ['sometimes', 'date_format:H:i'],
             'end_time' => ['sometimes', 'date_format:H:i'],

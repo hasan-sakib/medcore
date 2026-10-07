@@ -7,6 +7,7 @@ use App\Models\MedicineBatch;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use App\Services\InventoryService;
+use App\Support\TenantRule;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -52,15 +53,15 @@ class MedicineBatchController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'medicine_id' => 'required|exists:medicines,id',
+            'medicine_id' => ['required', TenantRule::exists('medicines', 'id')],
             'batch_number' => 'required|string|max:50',
             'lot_number' => 'nullable|string|max:50',
             'quantity' => 'required|integer|min:1',
             'unit_cost' => 'nullable|numeric|min:0',
             'expiry_date' => 'required|date|after:today',
             'manufactured_date' => 'nullable|date|before_or_equal:today',
-            'supplier_id' => 'nullable|exists:suppliers,id',
-            'purchase_order_id' => 'nullable|exists:purchase_orders,id',
+            'supplier_id' => ['nullable', TenantRule::exists('suppliers', 'id')],
+            'purchase_order_id' => ['nullable', TenantRule::exists('purchase_orders', 'id')],
         ]);
 
         try {

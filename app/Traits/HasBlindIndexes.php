@@ -20,9 +20,9 @@ trait HasBlindIndexes
         // Setting via magic attribute triggers EncryptedPhi cast
         $this->$field = $plaintext;
 
-        if (in_array($field, $this->blindIndexed ?? [], true)) {
+        if (in_array($field, $this->blindIndexed, true)) {
             $this->{$field.'_index'} = $plaintext !== null
-                ? static::computeBlindIndex($plaintext)
+                ? self::computeBlindIndex($plaintext)
                 : null;
         }
     }
@@ -33,7 +33,7 @@ trait HasBlindIndexes
      */
     public static function searchByBlindIndex(string $field, string $plaintext): Builder
     {
-        $hash = static::computeBlindIndex($plaintext);
+        $hash = self::computeBlindIndex($plaintext);
 
         return static::where($field.'_index', $hash);
     }

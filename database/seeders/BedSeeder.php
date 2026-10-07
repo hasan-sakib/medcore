@@ -35,31 +35,33 @@ class BedSeeder extends Seeder
         foreach ($wards as $wardData) {
             $ward = Ward::create(array_merge($wardData, ['is_active' => true]));
 
-            $bedCount  = match ($wardData['ward_type']) { 'icu' => 6, default => 12 };
-            $bedType   = $wardData['ward_type'] === 'icu' ? 'icu' : 'standard';
-            $prefix    = $wardData['code'];
+            $bedCount = match ($wardData['ward_type']) {
+                'icu' => 6, default => 12
+            };
+            $bedType = $wardData['ward_type'] === 'icu' ? 'icu' : 'standard';
+            $prefix = $wardData['code'];
 
             // Rooms: 2 beds per room for general, 1 per room for ICU
             $bedsPerRoom = $wardData['ward_type'] === 'icu' ? 1 : 2;
-            $roomCount   = intdiv($bedCount, $bedsPerRoom);
-            $bedIndex    = 1;
+            $roomCount = intdiv($bedCount, $bedsPerRoom);
+            $bedIndex = 1;
 
             for ($r = 1; $r <= $roomCount; $r++) {
                 $room = Room::create([
-                    'ward_id'     => $ward->id,
+                    'ward_id' => $ward->id,
                     'room_number' => $prefix.'-R'.str_pad((string) $r, 2, '0', STR_PAD_LEFT),
-                    'room_type'   => $wardData['ward_type'] === 'icu' ? 'icu' : 'general',
-                    'is_active'   => true,
+                    'room_type' => $wardData['ward_type'] === 'icu' ? 'icu' : 'general',
+                    'is_active' => true,
                 ]);
 
                 for ($b = 0; $b < $bedsPerRoom; $b++, $bedIndex++) {
                     Bed::create([
-                        'ward_id'    => $ward->id,
-                        'room_id'    => $room->id,
+                        'ward_id' => $ward->id,
+                        'room_id' => $room->id,
                         'bed_number' => $prefix.'-'.str_pad((string) $bedIndex, 3, '0', STR_PAD_LEFT),
-                        'bed_type'   => $bedType,
-                        'status'     => 'available',
-                        'is_active'  => true,
+                        'bed_type' => $bedType,
+                        'status' => 'available',
+                        'is_active' => true,
                     ]);
                 }
             }

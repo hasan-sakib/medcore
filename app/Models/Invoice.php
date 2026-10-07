@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Invoice extends Model
 {
-    use BelongsToTenant, Auditable, SoftDeletes;
+    use Auditable, BelongsToTenant, SoftDeletes;
 
     protected $fillable = [
         'patient_id', 'encounter_id', 'invoice_number', 'status',
@@ -21,25 +21,59 @@ class Invoice extends Model
     ];
 
     protected $casts = [
-        'subtotal'         => 'decimal:2',
-        'tax_total'        => 'decimal:2',
-        'discount_amount'  => 'decimal:2',
-        'total_amount'     => 'decimal:2',
-        'amount_paid'      => 'decimal:2',
-        'amount_due'       => 'decimal:2',
-        'due_date'         => 'date',
-        'paid_at'          => 'datetime',
-        'cancelled_at'     => 'datetime',
+        'subtotal' => 'decimal:2',
+        'tax_total' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
+        'amount_paid' => 'decimal:2',
+        'amount_due' => 'decimal:2',
+        'due_date' => 'date',
+        'paid_at' => 'datetime',
+        'cancelled_at' => 'datetime',
     ];
 
-    public function tenant(): BelongsTo { return $this->belongsTo(Tenant::class); }
-    public function patient(): BelongsTo { return $this->belongsTo(Patient::class); }
-    public function encounter(): BelongsTo { return $this->belongsTo(Encounter::class); }
-    public function createdBy(): BelongsTo { return $this->belongsTo(User::class, 'created_by'); }
-    public function lines(): HasMany { return $this->hasMany(InvoiceLine::class); }
-    public function payments(): HasMany { return $this->hasMany(Payment::class); }
-    public function claims(): HasMany { return $this->hasMany(Claim::class); }
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
 
-    public function isPaid(): bool { return $this->status === 'paid'; }
-    public function isVoidable(): bool { return in_array($this->status, ['draft', 'sent']); }
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class);
+    }
+
+    public function encounter(): BelongsTo
+    {
+        return $this->belongsTo(Encounter::class);
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function lines(): HasMany
+    {
+        return $this->hasMany(InvoiceLine::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function claims(): HasMany
+    {
+        return $this->hasMany(Claim::class);
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->status === 'paid';
+    }
+
+    public function isVoidable(): bool
+    {
+        return in_array($this->status, ['draft', 'sent']);
+    }
 }

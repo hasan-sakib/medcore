@@ -1,9 +1,8 @@
-import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
-import { Can } from '@/Components/Can';
 import { useBedBoard } from '@/hooks/useBedBoard';
-import type { PageProps, BedWithAllocation, WardWithBeds, Patient, Encounter } from '@/types';
+import type { PageProps, BedWithAllocation, WardWithBeds } from '@/types';
 
 interface Props extends PageProps {
     wards: WardWithBeds[];
@@ -34,7 +33,7 @@ interface DischargeModalState {
     allocationId: number;
 }
 
-export default function Board({ wards, auth, tenant }: Props) {
+export default function Board({ wards, tenant }: Props) {
     const allInitialBeds = wards.flatMap(w => w.beds ?? []);
     const bedMap = useBedBoard(tenant?.id ?? 0, allInitialBeds);
 

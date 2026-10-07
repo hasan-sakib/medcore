@@ -31,11 +31,11 @@ class BedAllocationService
                 }
 
                 $allocation = BedAllocation::create([
-                    'bed_id'       => $fresh->id,
-                    'patient_id'   => $patient->id,
+                    'bed_id' => $fresh->id,
+                    'patient_id' => $patient->id,
                     'encounter_id' => $encounter?->id,
                     'allocated_by' => $allocatedBy->id,
-                    'admitted_at'  => now(),
+                    'admitted_at' => now(),
                 ]);
 
                 $fresh->update(['status' => 'occupied']);
@@ -60,7 +60,7 @@ class BedAllocationService
                 $bed = Bed::where('id', $allocation->bed_id)->lockForUpdate()->first();
 
                 $allocation->update([
-                    'discharged_at'    => now(),
+                    'discharged_at' => now(),
                     'discharge_reason' => $reason,
                 ]);
 

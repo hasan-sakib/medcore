@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class InsurancePolicy extends Model
 {
-    use BelongsToTenant, Auditable;
+    use Auditable, BelongsToTenant;
 
     protected $fillable = [
         'patient_id', 'provider_name', 'policy_number', 'group_number',
@@ -19,22 +19,34 @@ class InsurancePolicy extends Model
     ];
 
     protected $casts = [
-        'coverage_limit'    => 'decimal:2',
-        'copay_amount'      => 'decimal:2',
+        'coverage_limit' => 'decimal:2',
+        'copay_amount' => 'decimal:2',
         'deductible_amount' => 'decimal:2',
-        'valid_from'        => 'date',
-        'valid_until'       => 'date',
-        'is_active'         => 'boolean',
+        'valid_from' => 'date',
+        'valid_until' => 'date',
+        'is_active' => 'boolean',
     ];
 
-    public function patient(): BelongsTo { return $this->belongsTo(Patient::class); }
-    public function claims(): HasMany { return $this->hasMany(Claim::class); }
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class);
+    }
+
+    public function claims(): HasMany
+    {
+        return $this->hasMany(Claim::class);
+    }
 
     public function isCurrentlyActive(): bool
     {
-        if (! $this->is_active) return false;
+        if (! $this->is_active) {
+            return false;
+        }
         $today = now()->toDateString();
-        if ($this->valid_from->gt($today)) return false;
+        if ($this->valid_from->gt($today)) {
+            return false;
+        }
+
         return $this->valid_until === null || $this->valid_until->gte($today);
     }
 }

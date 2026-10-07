@@ -1,5 +1,4 @@
 import { Head, useForm, router } from '@inertiajs/react';
-import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import type { PageProps, Patient, Encounter } from '@/types';
 
@@ -19,7 +18,7 @@ export default function CreateInvoice({ patients, encounters }: Props) {
         form.setData('patient_id', patientId);
         form.setData('encounter_id', '');
         if (patientId) {
-            router.reload({ data: { patient_id: patientId }, only: ['encounters'], preserveState: true });
+            router.reload({ data: { patient_id: patientId }, only: ['encounters'] });
         }
     };
 

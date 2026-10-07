@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Patient extends Model
@@ -82,7 +83,7 @@ class Patient extends Model
         return $this->hasMany(InsurancePolicy::class);
     }
 
-    public function portalUser(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function portalUser(): HasOne
     {
         return $this->hasOne(User::class);
     }

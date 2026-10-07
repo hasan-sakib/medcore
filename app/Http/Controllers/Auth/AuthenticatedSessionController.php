@@ -24,6 +24,19 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
+
+        if ($pending = $request->pendingTwoFactorUser()) {
+            // Password OK but 2FA outstanding: do not log in, park the user id in the session.
+            $request->session()->regenerate();
+            $request->session()->put('two_factor', [
+                'id' => $pending->id,
+                'remember' => $request->boolean('remember'),
+                'expires_at' => now()->addMinutes(10)->getTimestamp(),
+            ]);
+
+            return redirect('/two-factor-challenge');
+        }
+
         $request->session()->regenerate();
 
         $intended = $request->user()->isPatientPortalUser()

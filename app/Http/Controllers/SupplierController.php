@@ -39,6 +39,11 @@ class SupplierController extends Controller
         return redirect()->route('admin.suppliers.index')->with('success', 'Supplier created.');
     }
 
+    public function show(Supplier $supplier): RedirectResponse
+    {
+        return redirect()->route('admin.suppliers.edit', $supplier);
+    }
+
     public function edit(Supplier $supplier): Response
     {
         return Inertia::render('Suppliers/Edit', ['supplier' => $supplier]);

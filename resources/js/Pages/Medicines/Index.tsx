@@ -73,6 +73,9 @@ export default function Index({ medicines, filters }: Props) {
                                         <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${med.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                                             {med.is_active ? 'Active' : 'Inactive'}
                                         </span>
+                                        <Can role="tenant-admin">
+                                            <Link href={`/admin/medicines/${med.id}/edit`} className="ml-3 text-xs text-primary-600 hover:underline">Edit</Link>
+                                        </Can>
                                     </td>
                                 </tr>
                             ))}

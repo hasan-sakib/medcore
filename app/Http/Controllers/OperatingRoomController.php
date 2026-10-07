@@ -8,6 +8,9 @@ use App\Models\OrSchedule;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,7 +20,7 @@ class OperatingRoomController extends Controller
     {
         $this->authorize('viewAny', OperatingRoom::class);
 
-        $date = $request->date('date', now()->toDateString());
+        $date = $request->date('date') ?? now();
 
         $rooms = OperatingRoom::where('is_active', true)
             ->with([
@@ -34,9 +37,9 @@ class OperatingRoomController extends Controller
             ->get(['id', 'name']);
 
         return Inertia::render('OperatingRooms/Index', [
-            'rooms'    => $rooms,
+            'rooms' => $rooms,
             'surgeons' => $surgeons,
-            'date'     => $date->toDateString(),
+            'date' => $date->toDateString(),
         ]);
     }
 
@@ -44,17 +47,43 @@ class OperatingRoomController extends Controller
     {
         $this->authorize('create', OrSchedule::class);
 
+        $tenantId = $request->user()->tenant_id;
+
+        // `exists:` rules bypass the tenant scope, so constrain them explicitly.
         $data = $request->validate([
-            'operating_room_id' => ['required', 'exists:operating_rooms,id'],
-            'surgeon_id'        => ['required', 'exists:users,id'],
-            'encounter_id'      => ['nullable', 'exists:encounters,id'],
-            'procedure_name'    => ['required', 'string', 'max:255'],
-            'scheduled_start'   => ['required', 'date'],
-            'scheduled_end'     => ['required', 'date', 'after:scheduled_start'],
-            'notes'             => ['nullable', 'string', 'max:1000'],
+            'operating_room_id' => ['required', Rule::exists('operating_rooms', 'id')->where('tenant_id', $tenantId)],
+            'surgeon_id' => ['required', Rule::exists('users', 'id')->where('tenant_id', $tenantId)],
+            'encounter_id' => ['nullable', Rule::exists('encounters', 'id')->where('tenant_id', $tenantId)],
+            'procedure_name' => ['required', 'string', 'max:255'],
+            'scheduled_start' => ['required', 'date'],
+            'scheduled_end' => ['required', 'date', 'after:scheduled_start'],
+            'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $schedule = OrSchedule::create(array_merge($data, ['created_by' => $request->user()->id]));
+        // Serialise bookings per room: lock the room row, then check for overlaps so two
+        // concurrent requests cannot both pass the check and double-book the theatre.
+        $schedule = DB::transaction(function () use ($data, $request) {
+            OperatingRoom::whereKey($data['operating_room_id'])->lockForUpdate()->firstOrFail();
+
+            $overlapping = fn ($q) => $q->whereNotIn('status', ['cancelled', 'completed'])
+                ->where('scheduled_start', '<', $data['scheduled_end'])
+                ->where('scheduled_end', '>', $data['scheduled_start']);
+
+            if (OrSchedule::where('operating_room_id', $data['operating_room_id'])->where($overlapping)->exists()) {
+                throw ValidationException::withMessages([
+                    'scheduled_start' => 'This operating room is already booked for an overlapping time.',
+                ]);
+            }
+
+            if (OrSchedule::where('surgeon_id', $data['surgeon_id'])->where($overlapping)->exists()) {
+                throw ValidationException::withMessages([
+                    'surgeon_id' => 'This surgeon already has a procedure scheduled in that time window.',
+                ]);
+            }
+
+            return OrSchedule::create(array_merge($data, ['created_by' => $request->user()->id]));
+        });
+
         $schedule->load('surgeon');
 
         OrScheduleUpdated::dispatch($schedule);

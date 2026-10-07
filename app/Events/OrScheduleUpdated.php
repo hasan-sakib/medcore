@@ -30,16 +30,16 @@ class OrScheduleUpdated implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'id'                => $this->schedule->id,
+            'id' => $this->schedule->id,
             'operating_room_id' => $this->schedule->operating_room_id,
-            'procedure_name'    => $this->schedule->procedure_name,
-            'scheduled_start'   => $this->schedule->scheduled_start->toISOString(),
-            'scheduled_end'     => $this->schedule->scheduled_end->toISOString(),
-            'actual_start'      => $this->schedule->actual_start?->toISOString(),
-            'actual_end'        => $this->schedule->actual_end?->toISOString(),
-            'status'            => $this->schedule->status,
-            'surgeon'           => [
-                'id'   => $this->schedule->surgeon_id,
+            'procedure_name' => $this->schedule->procedure_name,
+            'scheduled_start' => $this->schedule->scheduled_start->toISOString(),
+            'scheduled_end' => $this->schedule->scheduled_end->toISOString(),
+            'actual_start' => $this->schedule->actual_start?->toISOString(),
+            'actual_end' => $this->schedule->actual_end?->toISOString(),
+            'status' => $this->schedule->status,
+            'surgeon' => [
+                'id' => $this->schedule->surgeon_id,
                 'name' => optional($this->schedule->surgeon)->name,
             ],
         ];

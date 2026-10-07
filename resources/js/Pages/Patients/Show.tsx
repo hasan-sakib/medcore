@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import { StatusBadge } from '@/Components/StatusBadge';
@@ -54,6 +54,22 @@ export default function Show({ patient, appointments, encounters }: Props) {
                                 className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
                             >
                                 Edit
+                            </Link>
+                        </Can>
+                        <Can permission="invoices.view">
+                            <Link
+                                href={`/billing/insurance-policies?patient_id=${patient.id}`}
+                                className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+                            >
+                                Insurance
+                            </Link>
+                        </Can>
+                        <Can permission="insurance-policies.manage">
+                            <Link
+                                href={`/billing/insurance-policies/create?patient_id=${patient.id}`}
+                                className="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+                            >
+                                Add Insurance Policy
                             </Link>
                         </Can>
                         <Can permission="patients.view">

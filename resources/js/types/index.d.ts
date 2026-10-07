@@ -30,6 +30,7 @@ export interface PageProps {
         success: string | null;
         error: string | null;
     };
+    [key: string]: unknown;
 }
 
 export type PaginatedResource<T> = {

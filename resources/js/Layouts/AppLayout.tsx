@@ -16,6 +16,12 @@ interface NavSection {
     items: NavItem[];
 }
 
+const navIcon = (d: string): ReactNode => (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={d} />
+    </svg>
+);
+
 const navSections: NavSection[] = [
     {
         items: [
@@ -209,6 +215,55 @@ const navSections: NavSection[] = [
                     </svg>
                 ),
             },
+        ],
+    },
+    {
+        heading: 'Inventory',
+        items: [
+            { label: 'Receive Stock', href: '/medicine-batches', permission: 'medicine-batches.create',
+                icon: navIcon('M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4') },
+            { label: 'Suppliers', href: '/admin/suppliers', role: 'tenant-admin',
+                icon: navIcon('M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z') },
+            { label: 'Purchase Orders', href: '/admin/purchase-orders', role: 'tenant-admin',
+                icon: navIcon('M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z') },
+        ],
+    },
+    {
+        heading: 'Billing Setup',
+        items: [
+            { label: 'Charge Items', href: '/billing/charge-items', permission: 'charge-items.manage',
+                icon: navIcon('M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z') },
+            { label: 'Tax Configuration', href: '/billing/tax-configs', permission: 'tax-configs.manage',
+                icon: navIcon('M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z') },
+            { label: 'Insurance Policies', href: '/billing/insurance-policies', permission: 'invoices.view',
+                icon: navIcon('M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z') },
+        ],
+    },
+    {
+        heading: 'Administration',
+        items: [
+            { label: 'Users', href: '/admin/users', permission: 'users.view',
+                icon: navIcon('M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z') },
+            { label: 'Roles', href: '/admin/roles', permission: 'roles.manage',
+                icon: navIcon('M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z') },
+            { label: 'Wards, Rooms & Beds', href: '/admin/facilities', permission: 'wards.manage',
+                icon: navIcon('M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6') },
+            { label: 'Manage Operating Rooms', href: '/admin/facilities/operating-rooms', permission: 'operating-rooms.manage',
+                icon: navIcon('M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z') },
+        ],
+    },
+    {
+        heading: 'Platform',
+        items: [
+            { label: 'Tenants', href: '/super-admin/tenants', role: 'super-admin',
+                icon: navIcon('M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4') },
+        ],
+    },
+    {
+        heading: 'Account',
+        items: [
+            { label: 'Security (2FA)', href: '/profile/security',
+                icon: navIcon('M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4') },
         ],
     },
 ];

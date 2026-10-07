@@ -12,17 +12,17 @@ class EncryptedPhi implements CastsAttributes
 
     private static function encrypter(): Encrypter
     {
-        if (static::$encrypter === null) {
+        if (self::$encrypter === null) {
             $key = config('phi.encryption_key');
 
             if (! $key) {
                 throw new \RuntimeException('PHI_ENCRYPTION_KEY is not set.');
             }
 
-            static::$encrypter = new Encrypter(base64_decode($key), 'AES-256-GCM');
+            self::$encrypter = new Encrypter(base64_decode($key), 'AES-256-GCM');
         }
 
-        return static::$encrypter;
+        return self::$encrypter;
     }
 
     /** @param  array<string, mixed>  $attributes */
@@ -32,7 +32,7 @@ class EncryptedPhi implements CastsAttributes
             return null;
         }
 
-        return static::encrypter()->decryptString($value);
+        return self::encrypter()->decryptString($value);
     }
 
     /** @param  array<string, mixed>  $attributes */
@@ -42,6 +42,6 @@ class EncryptedPhi implements CastsAttributes
             return null;
         }
 
-        return static::encrypter()->encryptString((string) $value);
+        return self::encrypter()->encryptString((string) $value);
     }
 }

@@ -1,7 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
-import { Can } from '@/Components/Can';
 import type { PageProps, Invoice, InvoiceLine, Payment, Claim, ChargeItem, InsurancePolicy, Patient } from '@/types';
 
 type FullInvoice = Invoice & {

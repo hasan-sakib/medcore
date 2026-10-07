@@ -22,9 +22,9 @@ class Tenant extends Model
     protected function casts(): array
     {
         return [
-            'settings'          => 'array',
-            'features'          => 'array',
-            'trial_ends_at'     => 'datetime',
+            'settings' => 'array',
+            'features' => 'array',
+            'trial_ends_at' => 'datetime',
             'is_publicly_listed' => 'boolean',
         ];
     }

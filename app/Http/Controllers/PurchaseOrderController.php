@@ -6,6 +6,7 @@ use App\Models\Medicine;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\Supplier;
+use App\Support\TenantRule;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -45,11 +46,11 @@ class PurchaseOrderController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'supplier_id' => 'nullable|exists:suppliers,id',
+            'supplier_id' => ['nullable', TenantRule::exists('suppliers', 'id')],
             'notes' => 'nullable|string',
             'expected_delivery_date' => 'nullable|date|after_or_equal:today',
             'items' => 'required|array|min:1',
-            'items.*.medicine_id' => 'required|exists:medicines,id',
+            'items.*.medicine_id' => ['required', TenantRule::exists('medicines', 'id')],
             'items.*.quantity_ordered' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -24,9 +25,33 @@ class LoginRequest extends FormRequest
         ];
     }
 
+    /** Set when the password was correct but a 2FA challenge is still outstanding. */
+    private ?User $pendingTwoFactorUser = null;
+
+    public function pendingTwoFactorUser(): ?User
+    {
+        return $this->pendingTwoFactorUser;
+    }
+
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
+
+        // Users with confirmed 2FA are NOT logged in here: validate the password only
+        // (the provider query is tenant-scoped, exactly like Auth::attempt) and let the
+        // two-factor challenge complete the login.
+        $provider = Auth::guard('web')->getProvider();
+        $credentials = $this->only('email', 'password');
+        $candidate = $provider->retrieveByCredentials($credentials);
+
+        if ($candidate instanceof User
+            && $candidate->hasTwoFactorEnabled()
+            && $provider->validateCredentials($candidate, $credentials)) {
+            RateLimiter::clear($this->throttleKey());
+            $this->pendingTwoFactorUser = $candidate;
+
+            return;
+        }
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());

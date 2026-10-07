@@ -6,7 +6,6 @@ use App\Models\Bed;
 use App\Models\Ward;
 use App\Services\BedAllocationService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 

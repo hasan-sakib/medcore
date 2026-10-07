@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { router } from '@inertiajs/react';
 import type { Patient } from '@/types';
 
 interface Props {

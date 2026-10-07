@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Encounter;
+use App\Support\TenantRule;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -32,10 +33,10 @@ class EncounterController extends Controller
         $this->authorize('create', Encounter::class);
 
         $validated = $request->validate([
-            'patient_id' => ['required', 'integer', 'exists:patients,id'],
-            'appointment_id' => ['nullable', 'integer', 'exists:appointments,id'],
-            'attending_doctor_id' => ['required', 'integer', 'exists:users,id'],
-            'department_id' => ['nullable', 'integer', 'exists:departments,id'],
+            'patient_id' => ['required', 'integer', TenantRule::exists('patients', 'id')],
+            'appointment_id' => ['nullable', 'integer', TenantRule::exists('appointments', 'id')],
+            'attending_doctor_id' => ['required', 'integer', TenantRule::exists('users', 'id')],
+            'department_id' => ['nullable', 'integer', TenantRule::exists('departments', 'id')],
             'encounter_type' => ['required', 'in:outpatient,inpatient,emergency,teleconsult'],
             'chief_complaint' => ['nullable', 'string', 'max:1000'],
             'encounter_date' => ['required', 'date'],

@@ -1,22 +1,35 @@
 <?php
 
 use App\Models\Appointment;
+use App\Models\Bed;
+use App\Models\BedAllocation;
+use App\Models\ChargeItem;
+use App\Models\Claim;
 use App\Models\ClinicalNote;
 use App\Models\Department;
 use App\Models\DispenseRecord;
 use App\Models\DoctorSchedule;
 use App\Models\Encounter;
 use App\Models\EncounterDiagnosis;
+use App\Models\InsurancePolicy;
+use App\Models\Invoice;
+use App\Models\InvoiceLine;
 use App\Models\Medicine;
 use App\Models\MedicineBatch;
+use App\Models\OperatingRoom;
+use App\Models\OrSchedule;
 use App\Models\Patient;
+use App\Models\Payment;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\Room;
 use App\Models\StockMovement;
 use App\Models\Supplier;
+use App\Models\TaxConfig;
 use App\Models\Vital;
+use App\Models\Ward;
 use App\Traits\BelongsToTenant;
 
 /**
@@ -30,7 +43,7 @@ use App\Traits\BelongsToTenant;
  * phases are implemented.
  */
 
-// Phase 1 (Foundation) + Phase 2 (EMR) + Phase 3 (Pharmacy)
+// Phase 1 (Foundation) + Phase 2 (EMR) + Phase 3 (Pharmacy) + Phase 4/5 (Beds, OR, Billing)
 $tenantModels = [
     // Phase 2: EMR & Patient Lifecycle
     Department::class,
@@ -53,6 +66,23 @@ $tenantModels = [
     Prescription::class,
     PrescriptionItem::class,
     DispenseRecord::class,
+
+    // Phase 4: Beds & Operating Rooms
+    Ward::class,
+    Room::class,
+    Bed::class,
+    BedAllocation::class,
+    OperatingRoom::class,
+    OrSchedule::class,
+
+    // Phase 5: Billing & Insurance
+    ChargeItem::class,
+    Invoice::class,
+    InvoiceLine::class,
+    Payment::class,
+    InsurancePolicy::class,
+    Claim::class,
+    TaxConfig::class,
 ];
 
 foreach ($tenantModels as $modelClass) {

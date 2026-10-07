@@ -30,20 +30,20 @@ class DashboardController extends Controller
 
         $summary = [
             'total_appointments' => Appointment::where('patient_id', $patient->id)->count(),
-            'upcoming_count'     => Appointment::where('patient_id', $patient->id)
+            'upcoming_count' => Appointment::where('patient_id', $patient->id)
                 ->where('status', 'confirmed')
                 ->where('scheduled_at', '>=', now())
                 ->count(),
-            'unpaid_balance'     => Invoice::where('patient_id', $patient->id)
+            'unpaid_balance' => Invoice::where('patient_id', $patient->id)
                 ->whereIn('status', ['sent', 'partially_paid'])
                 ->sum('amount_due'),
         ];
 
         return Inertia::render('Portal/Dashboard', [
-            'patient'              => $patient,
+            'patient' => $patient,
             'upcomingAppointments' => $upcomingAppointments,
-            'recentInvoices'       => $recentInvoices,
-            'summary'              => $summary,
+            'recentInvoices' => $recentInvoices,
+            'summary' => $summary,
         ]);
     }
 }

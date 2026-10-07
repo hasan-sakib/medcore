@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Middleware\EnsureCentralDomain;
+use App\Http\Middleware\EnsurePatientPortalUser;
 use App\Http\Middleware\EnsureSuperAdmin;
+use App\Http\Middleware\EnsureUserBelongsToTenant;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\IdentifyTenant;
 use Illuminate\Foundation\Application;
@@ -32,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->web(append: [
+            EnsureUserBelongsToTenant::class,
             HandleInertiaRequests::class,
         ]);
 
@@ -40,8 +44,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'super-admin' => EnsureSuperAdmin::class,
-            'patient-portal' => \App\Http\Middleware\EnsurePatientPortalUser::class,
-            'central-only' => \App\Http\Middleware\EnsureCentralDomain::class,
+            'patient-portal' => EnsurePatientPortalUser::class,
+            'central-only' => EnsureCentralDomain::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

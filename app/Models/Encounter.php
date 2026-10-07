@@ -49,6 +49,11 @@ class Encounter extends Model
         return $this->belongsTo(Department::class);
     }
 
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
     public function clinicalNotes(): HasMany
     {
         return $this->hasMany(ClinicalNote::class);

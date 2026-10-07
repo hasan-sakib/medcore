@@ -16,7 +16,12 @@ trait BelongsToTenant
 
         static::creating(function (self $model) {
             $manager = app(TenantManager::class);
-            if (! $model->tenant_id && $manager->hasCurrent()) {
+
+            // Inside a tenant context the tenant is always forced to the current
+            // one, so a caller cannot write a record into another tenant by
+            // passing an explicit tenant_id. Without a context (super admin,
+            // bypassed, seeders, provisioning) the supplied tenant_id is kept.
+            if ($manager->hasCurrent()) {
                 $model->tenant_id = $manager->current()->id;
             }
         });

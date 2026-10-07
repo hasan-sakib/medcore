@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\OperatingRoom;
 use App\Models\OrSchedule;
 use App\Models\User;
 

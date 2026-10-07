@@ -30,13 +30,13 @@ class DemoTenantSeeder extends Seeder
             ]
         );
         $tenantA->update([
-            'tagline'            => 'Compassionate care for every patient, every day.',
-            'description'        => 'City General Hospital has served the community for over 50 years, offering a full spectrum of clinical services from emergency care to advanced surgical procedures. Our multidisciplinary team is committed to delivering patient-centered care.',
-            'address'            => '100 Health Plaza, Downtown',
-            'city'               => 'Cityville',
-            'phone'              => '+1 (555) 100-2000',
-            'email'              => 'info@citygeneral.example.com',
-            'features'           => ['Emergency', 'ICU', 'Pharmacy', 'Laboratory', 'Surgery', 'Cardiology', 'Pediatrics'],
+            'tagline' => 'Compassionate care for every patient, every day.',
+            'description' => 'City General Hospital has served the community for over 50 years, offering a full spectrum of clinical services from emergency care to advanced surgical procedures. Our multidisciplinary team is committed to delivering patient-centered care.',
+            'address' => '100 Health Plaza, Downtown',
+            'city' => 'Cityville',
+            'phone' => '+1 (555) 100-2000',
+            'email' => 'info@citygeneral.example.com',
+            'features' => ['Emergency', 'ICU', 'Pharmacy', 'Laboratory', 'Surgery', 'Cardiology', 'Pediatrics'],
             'is_publicly_listed' => true,
         ]);
 
@@ -54,13 +54,13 @@ class DemoTenantSeeder extends Seeder
             ]
         );
         $tenantB->update([
-            'tagline'            => 'Specialized outpatient care close to home.',
-            'description'        => 'Sunrise Clinic provides outpatient specialist consultations, diagnostics, and preventive health services. We focus on fast, convenient care without sacrificing quality.',
-            'address'            => '45 Sunrise Avenue, Westside',
-            'city'               => 'Westfield',
-            'phone'              => '+1 (555) 200-4000',
-            'email'              => 'hello@sunrise.example.com',
-            'features'           => ['General Medicine', 'Diagnostics', 'Pharmacy', 'Radiology'],
+            'tagline' => 'Specialized outpatient care close to home.',
+            'description' => 'Sunrise Clinic provides outpatient specialist consultations, diagnostics, and preventive health services. We focus on fast, convenient care without sacrificing quality.',
+            'address' => '45 Sunrise Avenue, Westside',
+            'city' => 'Westfield',
+            'phone' => '+1 (555) 200-4000',
+            'email' => 'hello@sunrise.example.com',
+            'features' => ['General Medicine', 'Diagnostics', 'Pharmacy', 'Radiology'],
             'is_publicly_listed' => true,
         ]);
 
@@ -107,8 +107,8 @@ class DemoTenantSeeder extends Seeder
 
         foreach ($doctors as $i => $doctor) {
             $doctor->update([
-                'specialty'          => $specialties[$i % count($specialties)],
-                'bio'                => $bios[$i % count($bios)],
+                'specialty' => $specialties[$i % count($specialties)],
+                'bio' => $bios[$i % count($bios)],
                 'is_publicly_listed' => true,
             ]);
         }

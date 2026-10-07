@@ -27,7 +27,7 @@ export default function PublicBookAppointment({ hospitals, departments, doctors,
     const handleHospitalChange = (val: string) => {
         form.setData(d => ({ ...d, tenant_id: val, department_id: '', doctor_id: '' }));
         if (val) {
-            router.reload({ data: { hospital_id: val }, only: ['departments', 'doctors'], preserveState: true });
+            router.reload({ data: { hospital_id: val }, only: ['departments', 'doctors'] });
         }
     };
 

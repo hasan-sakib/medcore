@@ -7,6 +7,7 @@ use App\Models\Medicine;
 use App\Models\Patient;
 use App\Models\Prescription;
 use App\Services\PrescriptionService;
+use App\Support\TenantRule;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -59,11 +60,11 @@ class PrescriptionController extends Controller
         $this->authorize('create', Prescription::class);
 
         $validated = $request->validate([
-            'patient_id' => 'required|exists:patients,id',
-            'encounter_id' => 'nullable|exists:encounters,id',
+            'patient_id' => ['required', TenantRule::exists('patients', 'id')],
+            'encounter_id' => ['nullable', TenantRule::exists('encounters', 'id')],
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
-            'items.*.medicine_id' => 'required|exists:medicines,id',
+            'items.*.medicine_id' => ['required', TenantRule::exists('medicines', 'id')],
             'items.*.dosage_instruction' => 'required|string|max:200',
             'items.*.frequency' => 'required|string|max:100',
             'items.*.quantity_prescribed' => 'required|integer|min:1',

@@ -6,13 +6,14 @@ use App\Traits\Auditable;
 use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use Auditable, BelongsToTenant, HasFactory, HasRoles, Notifiable;
+    use Auditable, BelongsToTenant, HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name', 'email', 'password',
@@ -50,6 +51,11 @@ class User extends Authenticatable
     public function isPatientPortalUser(): bool
     {
         return $this->patient_id !== null;
+    }
+
+    public function hasTwoFactorEnabled(): bool
+    {
+        return $this->two_factor_secret !== null && $this->two_factor_confirmed_at !== null;
     }
 
     public function isSuperAdmin(): bool

@@ -68,6 +68,13 @@ class TenantController extends Controller
         ]);
     }
 
+    public function edit(Tenant $tenant): Response
+    {
+        return Inertia::render('SuperAdmin/Tenants/Edit', [
+            'tenant' => $tenant,
+        ]);
+    }
+
     public function update(Request $request, Tenant $tenant): RedirectResponse
     {
         $validated = $request->validate([
@@ -76,9 +83,14 @@ class TenantController extends Controller
             'plan' => ['nullable', 'string', 'in:trial,basic,professional,enterprise'],
         ]);
 
-        $tenant->update($validated);
+        $tenant->update([
+            'name' => $validated['name'],
+            'status' => $validated['status'],
+            'subscription_plan' => $validated['plan'] ?? $tenant->subscription_plan,
+        ]);
 
-        return back()->with('success', 'Tenant updated.');
+        return redirect()->route('super-admin.tenants.show', $tenant)
+            ->with('success', 'Tenant updated.');
     }
 
     public function destroy(Tenant $tenant): RedirectResponse

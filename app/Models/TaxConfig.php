@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TaxConfig extends Model
 {
-    use BelongsToTenant, Auditable;
+    use Auditable, BelongsToTenant;
 
     protected $fillable = ['name', 'rate', 'applies_to', 'is_active'];
 

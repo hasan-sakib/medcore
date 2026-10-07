@@ -1,33 +1,34 @@
 <?php
 
 use App\Http\Controllers\AnalyticsDashboardController;
-use App\Http\Controllers\PatientPortalAccountController;
-use App\Http\Controllers\Portal\AppointmentController as PortalAppointmentController;
-use App\Http\Controllers\Portal\DashboardController as PortalDashboardController;
-use App\Http\Controllers\Portal\InvoiceController as PortalInvoiceController;
-use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\BedAllocationController;
 use App\Http\Controllers\BedBoardController;
 use App\Http\Controllers\ClaimController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\OperatingRoomController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ClinicalNoteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DispenseController;
 use App\Http\Controllers\DoctorScheduleController;
 use App\Http\Controllers\EncounterController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MedicineBatchController;
 use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\OperatingRoomController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PatientPortalAccountController;
 use App\Http\Controllers\PharmacyDashboardController;
+use App\Http\Controllers\Portal\AppointmentController as PortalAppointmentController;
+use App\Http\Controllers\Portal\DashboardController as PortalDashboardController;
+use App\Http\Controllers\Portal\InvoiceController as PortalInvoiceController;
+use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\PublicController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SuperAdmin\TenantController;
-use App\Http\Controllers\PublicController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\VitalController;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +59,8 @@ Route::middleware('central-only')->name('public.')->group(function () {
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::get('two-factor-challenge', [TwoFactorChallengeController::class, 'create'])->name('two-factor.login');
+    Route::post('two-factor-challenge', [TwoFactorChallengeController::class, 'store'])->name('two-factor.login.store');
 });
 
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
@@ -155,15 +158,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
     // ── Phase 3: Prescriptions ────────────────────────────────────────────────
-    Route::middleware('permission:prescriptions.view')
-        ->group(function () {
-            Route::resource('prescriptions', PrescriptionController::class)->only(['index', 'show']);
-        });
-
+    // create/store must be declared BEFORE the {prescription} show route, otherwise
+    // 'create' is matched as a prescription id and 404s.
     Route::middleware('permission:prescriptions.create')
         ->group(function () {
             Route::get('prescriptions/create', [PrescriptionController::class, 'create'])->name('prescriptions.create');
             Route::post('prescriptions', [PrescriptionController::class, 'store'])->name('prescriptions.store');
+        });
+
+    Route::middleware('permission:prescriptions.view')
+        ->group(function () {
+            Route::resource('prescriptions', PrescriptionController::class)->only(['index', 'show']);
         });
 
     // ── Phase 3: Dispense POS ─────────────────────────────────────────────────
@@ -286,3 +291,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 });
         });
 });
+
+// ── Feature route files (included inside auth + verified) ──────────────────────
+Route::middleware(['auth', 'verified'])->group(base_path('routes/facilities.php'));
+Route::middleware(['auth', 'verified'])->group(base_path('routes/access.php'));
+Route::middleware(['auth', 'verified'])->group(base_path('routes/billing-setup.php'));

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Patient;
+use App\Support\TenantRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 
@@ -27,7 +28,7 @@ class StorePatientRequest extends FormRequest
             'address' => ['nullable', 'string', 'max:500'],
             'blood_group' => ['nullable', 'in:A+,A-,B+,B-,AB+,AB-,O+,O-'],
             'emergency_contact' => ['nullable', 'string', 'max:255'],
-            'department_id' => ['nullable', 'integer', 'exists:departments,id'],
+            'department_id' => ['nullable', 'integer', TenantRule::exists('departments', 'id')],
         ];
     }
 }

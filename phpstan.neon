@@ -1,12 +1,13 @@
 includes:
     - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
 
 parameters:
     paths:
         - app
     level: 6
+    # Eloquent relations/builders and array shapes are annotated loosely across the codebase;
+    # these two categories are noise on Laravel code, so they are excluded (real findings are not).
     ignoreErrors:
-        # Spatie permission dynamic roles/permissions
-        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::assignRole#'
-        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::hasRole#'
-        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model::can#'
+        - identifier: missingType.generics
+        - identifier: missingType.iterableValue

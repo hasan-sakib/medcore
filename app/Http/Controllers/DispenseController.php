@@ -6,6 +6,7 @@ use App\Models\DispenseRecord;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
 use App\Services\PrescriptionService;
+use App\Support\TenantRule;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,7 @@ class DispenseController extends Controller
         $this->authorize('create', DispenseRecord::class);
 
         $validated = $request->validate([
-            'prescription_item_id' => 'required|exists:prescription_items,id',
+            'prescription_item_id' => ['required', TenantRule::exists('prescription_items', 'id')],
         ]);
 
         $item = PrescriptionItem::with('prescription')->findOrFail($validated['prescription_item_id']);

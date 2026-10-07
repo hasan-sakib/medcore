@@ -182,7 +182,8 @@ class InventoryService
             $q->where('status', 'active');
         }], 'quantity_on_hand')
             ->where('is_active', true)
-            ->havingRaw('COALESCE(stock_on_hand, 0) <= medicines.reorder_level')
+            // whereRaw (not HAVING on an alias): HAVING without GROUP BY is MySQL-only.
+            ->whereRaw('COALESCE((select sum(mb.quantity_on_hand) from medicine_batches mb where mb.medicine_id = medicines.id and mb.status = ? and mb.tenant_id = medicines.tenant_id), 0) <= medicines.reorder_level', ['active'])
             ->orderBy('stock_on_hand')
             ->get();
     }

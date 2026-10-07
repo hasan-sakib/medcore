@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\ChargeItem;
 use App\Models\Encounter;
 use App\Models\Invoice;
-use App\Models\Patient;
 
 class BillingService
 {
@@ -28,12 +27,12 @@ class BillingService
         if ($consultation) {
             $this->invoiceService->addLine($invoice, [
                 'charge_item_id' => $consultation->id,
-                'description'    => 'Consultation: ' . $consultation->name,
-                'quantity'       => 1,
-                'unit_price'     => $consultation->unit_price,
-                'tax_rate'       => $consultation->tax_rate,
+                'description' => 'Consultation: '.$consultation->name,
+                'quantity' => 1,
+                'unit_price' => $consultation->unit_price,
+                'tax_rate' => $consultation->tax_rate,
                 'reference_type' => 'encounters',
-                'reference_id'   => $encounter->id,
+                'reference_id' => $encounter->id,
             ]);
         }
 
@@ -51,17 +50,17 @@ class BillingService
                 ->first();
 
             $unitPrice = $medicineItem?->unit_price ?? 0;
-            $taxRate   = $medicineItem?->tax_rate ?? 0;
+            $taxRate = $medicineItem?->tax_rate ?? 0;
 
             if ($unitPrice > 0) {
                 $this->invoiceService->addLine($invoice, [
                     'charge_item_id' => $medicineItem?->id,
-                    'description'    => 'Medicine: ' . $dispense->medicine->name,
-                    'quantity'       => $dispense->quantity_dispensed,
-                    'unit_price'     => $unitPrice,
-                    'tax_rate'       => $taxRate,
+                    'description' => 'Medicine: '.$dispense->medicine->name,
+                    'quantity' => $dispense->quantity_dispensed,
+                    'unit_price' => $unitPrice,
+                    'tax_rate' => $taxRate,
                     'reference_type' => 'dispense_records',
-                    'reference_id'   => $dispense->id,
+                    'reference_id' => $dispense->id,
                 ]);
             }
         }

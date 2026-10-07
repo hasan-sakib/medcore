@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
-    PieChart, Pie, Cell, Legend,
+    PieChart, Pie, Cell,
 } from 'recharts';
 import AppLayout from '@/Layouts/AppLayout';
 import type { PageProps } from '@/types';
@@ -80,7 +80,7 @@ export default function AnalyticsDashboard({
                             <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                             <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                             <YAxis tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} tick={{ fontSize: 11 }} />
-                            <Tooltip formatter={(v: number) => fmt(v)} />
+                            <Tooltip formatter={(v) => fmt(Number(v))} />
                             <Bar dataKey="total" fill="#2563eb" radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
@@ -100,7 +100,10 @@ export default function AnalyticsDashboard({
                                         cx="50%"
                                         cy="50%"
                                         outerRadius={75}
-                                        label={({ type, count }) => `${type}: ${count}`}
+                                        label={(entry) => {
+                                            const { type, count } = entry as unknown as { type: string; count: number };
+                                            return `${type}: ${count}`;
+                                        }}
                                     >
                                         {encounter_types.map((_, i) => (
                                             <Cell key={i} fill={COLORS[i % COLORS.length]} />

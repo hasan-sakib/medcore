@@ -10,7 +10,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\Permission\Models\Role;
 
 class PublicController extends Controller
 {
@@ -32,8 +31,8 @@ class PublicController extends Controller
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('city', 'like', "%{$search}%")
-                  ->orWhere('tagline', 'like', "%{$search}%");
+                    ->orWhere('city', 'like', "%{$search}%")
+                    ->orWhere('tagline', 'like', "%{$search}%");
             });
         }
 
@@ -41,7 +40,7 @@ class PublicController extends Controller
 
         return Inertia::render('Public/Hospitals/Index', [
             'hospitals' => $hospitals,
-            'search'    => $request->get('search', ''),
+            'search' => $request->get('search', ''),
         ]);
     }
 
@@ -64,9 +63,9 @@ class PublicController extends Controller
             ->get(['id', 'name', 'specialty', 'bio', 'avatar_url']);
 
         return Inertia::render('Public/Hospitals/Show', [
-            'hospital'    => $hospital,
+            'hospital' => $hospital,
             'departments' => $departments,
-            'doctors'     => $doctors,
+            'doctors' => $doctors,
         ]);
     }
 
@@ -80,7 +79,7 @@ class PublicController extends Controller
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('specialty', 'like', "%{$search}%");
+                    ->orWhere('specialty', 'like', "%{$search}%");
             });
         }
 
@@ -106,10 +105,10 @@ class PublicController extends Controller
             ->pluck('specialty');
 
         return Inertia::render('Public/Doctors/Index', [
-            'doctors'    => $doctors,
-            'hospitals'  => $hospitals,
+            'doctors' => $doctors,
+            'hospitals' => $hospitals,
             'specialties' => $specialties,
-            'filters'    => $request->only('search', 'hospital_id', 'specialty'),
+            'filters' => $request->only('search', 'hospital_id', 'specialty'),
         ]);
     }
 
@@ -137,24 +136,24 @@ class PublicController extends Controller
             : collect();
 
         return Inertia::render('Public/Appointments/Book', [
-            'hospitals'   => $hospitals,
+            'hospitals' => $hospitals,
             'departments' => $departments,
-            'doctors'     => $doctors,
-            'prefill'     => $request->only('hospital_id', 'department_id', 'doctor_id'),
+            'doctors' => $doctors,
+            'prefill' => $request->only('hospital_id', 'department_id', 'doctor_id'),
         ]);
     }
 
     public function appointmentStore(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'tenant_id'      => 'required|exists:tenants,id',
-            'department_id'  => 'nullable|exists:departments,id',
-            'doctor_id'      => 'nullable|exists:users,id',
-            'patient_name'   => 'required|string|max:200',
-            'patient_phone'  => 'required|string|max:30',
-            'patient_email'  => 'nullable|email|max:200',
+            'tenant_id' => 'required|exists:tenants,id',
+            'department_id' => 'nullable|exists:departments,id',
+            'doctor_id' => 'nullable|exists:users,id',
+            'patient_name' => 'required|string|max:200',
+            'patient_phone' => 'required|string|max:30',
+            'patient_email' => 'nullable|email|max:200',
             'preferred_date' => 'nullable|date|after:today',
-            'message'        => 'nullable|string|max:1000',
+            'message' => 'nullable|string|max:1000',
         ]);
 
         PublicAppointmentRequest::create($data);

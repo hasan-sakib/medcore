@@ -25,10 +25,10 @@ class PatientPortalAccountController extends Controller
         $tempPassword = Str::random(12);
 
         User::create([
-            'name'       => $patient->first_name . ' ' . $patient->last_name,
-            'email'      => $email,
-            'password'   => $tempPassword,
-            'tenant_id'  => $patient->tenant_id,
+            'name' => $patient->first_name.' '.$patient->last_name,
+            'email' => $email,
+            'password' => $tempPassword,
+            'tenant_id' => $patient->tenant_id,
             'patient_id' => $patient->id,
         ]);
 

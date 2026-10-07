@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Claim extends Model
 {
-    use BelongsToTenant, Auditable;
+    use Auditable, BelongsToTenant;
 
     protected $fillable = [
         'invoice_id', 'insurance_policy_id', 'patient_id', 'claim_number',
@@ -18,15 +18,30 @@ class Claim extends Model
     ];
 
     protected $casts = [
-        'amount_claimed'  => 'decimal:2',
+        'amount_claimed' => 'decimal:2',
         'amount_approved' => 'decimal:2',
-        'amount_paid'     => 'decimal:2',
-        'submitted_at'    => 'datetime',
-        'reviewed_at'     => 'datetime',
+        'amount_paid' => 'decimal:2',
+        'submitted_at' => 'datetime',
+        'reviewed_at' => 'datetime',
     ];
 
-    public function invoice(): BelongsTo { return $this->belongsTo(Invoice::class); }
-    public function insurancePolicy(): BelongsTo { return $this->belongsTo(InsurancePolicy::class); }
-    public function patient(): BelongsTo { return $this->belongsTo(Patient::class); }
-    public function submittedBy(): BelongsTo { return $this->belongsTo(User::class, 'submitted_by'); }
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class);
+    }
+
+    public function insurancePolicy(): BelongsTo
+    {
+        return $this->belongsTo(InsurancePolicy::class);
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class);
+    }
+
+    public function submittedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'submitted_by');
+    }
 }

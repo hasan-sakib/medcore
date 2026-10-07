@@ -17,14 +17,21 @@ class InvoiceLine extends Model
     ];
 
     protected $casts = [
-        'quantity'        => 'decimal:3',
-        'unit_price'      => 'decimal:2',
-        'tax_rate'        => 'decimal:2',
-        'tax_amount'      => 'decimal:2',
+        'quantity' => 'decimal:3',
+        'unit_price' => 'decimal:2',
+        'tax_rate' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
         'discount_amount' => 'decimal:2',
-        'line_total'      => 'decimal:2',
+        'line_total' => 'decimal:2',
     ];
 
-    public function invoice(): BelongsTo { return $this->belongsTo(Invoice::class); }
-    public function chargeItem(): BelongsTo { return $this->belongsTo(ChargeItem::class); }
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class);
+    }
+
+    public function chargeItem(): BelongsTo
+    {
+        return $this->belongsTo(ChargeItem::class);
+    }
 }

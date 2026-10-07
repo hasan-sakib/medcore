@@ -7,6 +7,7 @@ use App\Models\ClinicalNote;
 use App\Models\DispenseRecord;
 use App\Models\Encounter;
 use App\Models\Medicine;
+use App\Models\OrSchedule;
 use App\Models\Patient;
 use App\Models\Prescription;
 use App\Policies\AppointmentPolicy;
@@ -14,6 +15,7 @@ use App\Policies\ClinicalNotePolicy;
 use App\Policies\DispenseRecordPolicy;
 use App\Policies\EncounterPolicy;
 use App\Policies\MedicinePolicy;
+use App\Policies\OperatingRoomPolicy;
 use App\Policies\PatientPolicy;
 use App\Policies\PrescriptionPolicy;
 use App\Support\TenantManager;
@@ -42,6 +44,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Medicine::class, MedicinePolicy::class);
         Gate::policy(Prescription::class, PrescriptionPolicy::class);
         Gate::policy(DispenseRecord::class, DispenseRecordPolicy::class);
+
+        // Phase 4: OrSchedule has no dedicated policy class, so auto-discovery finds nothing
+        // and every OR-schedule action is denied. OperatingRoomPolicy covers it.
+        Gate::policy(OrSchedule::class, OperatingRoomPolicy::class);
 
         // Strict mode in non-production to surface N+1, lazy-loading, mass-assignment issues early
         Model::shouldBeStrict(! $this->app->isProduction());

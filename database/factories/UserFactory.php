@@ -22,6 +22,11 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'tenant_id' => Tenant::factory(),
+            'patient_id' => null,
+            'specialty' => null,
+            'bio' => null,
+            'avatar_url' => null,
+            'is_publicly_listed' => true,
             'remember_token' => Str::random(10),
         ];
     }
