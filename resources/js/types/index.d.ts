@@ -97,6 +97,7 @@ export interface Patient {
     registered_by: number | null;
     department_id: number | null;
     department?: Pick<Department, 'id' | 'name'> | null;
+    portal_user?: { id: number; email: string } | null;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
@@ -377,6 +378,133 @@ export interface PurchaseOrder {
     items?: PurchaseOrderItem[];
     items_count?: number;
     createdBy?: Pick<User, 'id' | 'name'>;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+}
+
+// ── Phase 5: Billing & Financials ─────────────────────────────────────────
+
+export interface TaxConfig {
+    id: number;
+    tenant_id: number;
+    name: string;
+    rate: number;
+    applies_to: 'all' | 'consultation' | 'medicine' | 'procedure' | 'bed';
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ChargeItem {
+    id: number;
+    tenant_id: number;
+    name: string;
+    code: string;
+    category: 'consultation' | 'procedure' | 'medicine' | 'bed' | 'lab' | 'radiology' | 'other';
+    unit_price: number;
+    tax_rate: number;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface InvoiceLine {
+    id: number;
+    tenant_id: number;
+    invoice_id: number;
+    charge_item_id: number | null;
+    description: string;
+    quantity: number;
+    unit_price: number;
+    tax_rate: number;
+    tax_amount: number;
+    discount_amount: number;
+    line_total: number;
+    reference_type: string | null;
+    reference_id: number | null;
+    chargeItem?: Pick<ChargeItem, 'id' | 'name' | 'code'> | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Payment {
+    id: number;
+    tenant_id: number;
+    invoice_id: number;
+    patient_id: number;
+    amount: number;
+    payment_method: 'cash' | 'card' | 'bank_transfer' | 'insurance' | 'mobile_money' | 'cheque';
+    reference_number: string | null;
+    notes: string | null;
+    recorded_by: number;
+    paid_at: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface InsurancePolicy {
+    id: number;
+    tenant_id: number;
+    patient_id: number;
+    provider_name: string;
+    policy_number: string;
+    group_number: string | null;
+    coverage_type: string;
+    coverage_limit: number | null;
+    copay_amount: number;
+    deductible_amount: number;
+    valid_from: string;
+    valid_until: string | null;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Claim {
+    id: number;
+    tenant_id: number;
+    invoice_id: number;
+    insurance_policy_id: number;
+    patient_id: number;
+    claim_number: string;
+    status: 'draft' | 'submitted' | 'under_review' | 'approved' | 'partially_approved' | 'rejected' | 'paid';
+    amount_claimed: number;
+    amount_approved: number | null;
+    amount_paid: number | null;
+    submitted_at: string | null;
+    reviewed_at: string | null;
+    notes: string | null;
+    submitted_by: number;
+    insurance_policy?: InsurancePolicy;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Invoice {
+    id: number;
+    tenant_id: number;
+    patient_id: number;
+    encounter_id: number | null;
+    invoice_number: string;
+    status: 'draft' | 'sent' | 'paid' | 'partially_paid' | 'cancelled' | 'void';
+    subtotal: number;
+    tax_total: number;
+    discount_amount: number;
+    total_amount: number;
+    amount_paid: number;
+    amount_due: number;
+    notes: string | null;
+    due_date: string | null;
+    paid_at: string | null;
+    cancelled_at: string | null;
+    pdf_path: string | null;
+    created_by: number;
+    patient?: Patient;
+    encounter?: Pick<Encounter, 'id' | 'encounter_date' | 'encounter_type'> | null;
+    lines?: InvoiceLine[];
+    payments?: Payment[];
+    claims?: Claim[];
     created_at: string;
     updated_at: string;
     deleted_at: string | null;

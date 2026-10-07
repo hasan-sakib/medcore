@@ -12,20 +12,20 @@ class Tenant extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
-        'slug',
-        'domain',
-        'status',
-        'settings',
-        'subscription_plan',
-        'trial_ends_at',
+        'name', 'slug', 'domain', 'status', 'settings',
+        'subscription_plan', 'trial_ends_at',
+        'tagline', 'description', 'address', 'city',
+        'phone', 'email', 'website', 'logo_url',
+        'features', 'is_publicly_listed',
     ];
 
     protected function casts(): array
     {
         return [
-            'settings' => 'array',
-            'trial_ends_at' => 'datetime',
+            'settings'          => 'array',
+            'features'          => 'array',
+            'trial_ends_at'     => 'datetime',
+            'is_publicly_listed' => 'boolean',
         ];
     }
 

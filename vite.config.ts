@@ -23,6 +23,15 @@ export default defineConfig({
         hmr: {
             host: 'localhost',
         },
+        proxy: {
+            // Forward all non-Vite requests to nginx so localhost:5173
+            // serves the full Laravel/Inertia app with HMR.
+            '^/(?!(@vite|@react-refresh|@id|@fs|resources/|node_modules))': {
+                target: 'http://nginx:80',
+                changeOrigin: false,
+                ws: false,
+            },
+        },
     },
     optimizeDeps: {
         esbuildOptions: {

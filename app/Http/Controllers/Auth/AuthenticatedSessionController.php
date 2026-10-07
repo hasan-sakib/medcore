@@ -26,7 +26,11 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $intended = $request->user()->isPatientPortalUser()
+            ? route('portal.dashboard', absolute: false)
+            : route('dashboard', absolute: false);
+
+        return redirect()->intended($intended);
     }
 
     public function destroy(Request $request): RedirectResponse

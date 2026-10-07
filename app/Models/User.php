@@ -15,13 +15,10 @@ class User extends Authenticatable
     use Auditable, BelongsToTenant, HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'tenant_id',
-        'two_factor_secret',
-        'two_factor_recovery_codes',
-        'two_factor_confirmed_at',
+        'name', 'email', 'password',
+        'tenant_id', 'patient_id',
+        'specialty', 'bio', 'avatar_url', 'is_publicly_listed',
+        'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at',
     ];
 
     protected $hidden = [
@@ -43,6 +40,16 @@ class User extends Authenticatable
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class);
+    }
+
+    public function isPatientPortalUser(): bool
+    {
+        return $this->patient_id !== null;
     }
 
     public function isSuperAdmin(): bool

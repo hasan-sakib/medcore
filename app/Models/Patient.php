@@ -66,4 +66,24 @@ class Patient extends Model
     {
         return $this->hasMany(Vital::class);
     }
+
+    public function dispenseRecords(): HasMany
+    {
+        return $this->hasMany(DispenseRecord::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function insurancePolicies(): HasMany
+    {
+        return $this->hasMany(InsurancePolicy::class);
+    }
+
+    public function portalUser(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(User::class);
+    }
 }

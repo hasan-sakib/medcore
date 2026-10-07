@@ -1,8 +1,16 @@
 <?php
 
+use App\Http\Controllers\AnalyticsDashboardController;
+use App\Http\Controllers\PatientPortalAccountController;
+use App\Http\Controllers\Portal\AppointmentController as PortalAppointmentController;
+use App\Http\Controllers\Portal\DashboardController as PortalDashboardController;
+use App\Http\Controllers\Portal\InvoiceController as PortalInvoiceController;
+use App\Http\Controllers\Portal\ProfileController as PortalProfileController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BedAllocationController;
 use App\Http\Controllers\BedBoardController;
+use App\Http\Controllers\ClaimController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OperatingRoomController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ClinicalNoteController;
@@ -19,6 +27,7 @@ use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SuperAdmin\TenantController;
+use App\Http\Controllers\PublicController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\VitalController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +42,17 @@ use Illuminate\Support\Facades\Route;
 | Super-admin routes are resolved from admin.medcore.local; the
 | IdentifyTenant middleware leaves $tenant = null for that subdomain.
 */
+
+// ── Public site (central domain only — medcore.local / localhost) ────────────
+Route::middleware('central-only')->name('public.')->group(function () {
+    Route::get('/', [PublicController::class, 'home'])->name('home');
+    Route::get('/hospitals', [PublicController::class, 'hospitals'])->name('hospitals');
+    Route::get('/hospitals/{slug}', [PublicController::class, 'hospitalShow'])->name('hospitals.show');
+    Route::get('/doctors', [PublicController::class, 'doctors'])->name('doctors');
+    Route::get('/book-appointment', [PublicController::class, 'appointmentForm'])->name('appointment.book');
+    Route::post('/book-appointment', [PublicController::class, 'appointmentStore'])->name('appointment.store');
+    Route::get('/appointment-confirmed', [PublicController::class, 'appointmentConfirm'])->name('appointment.confirm');
+});
 
 // ── Auth ────────────────────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -52,10 +72,29 @@ Route::prefix('super-admin')
         Route::resource('tenants', TenantController::class);
     });
 
+// ── Patient Portal ───────────────────────────────────────────────────────────
+Route::prefix('portal')
+    ->name('portal.')
+    ->middleware(['auth', 'patient-portal'])
+    ->group(function () {
+        Route::get('/', PortalDashboardController::class)->name('dashboard');
+
+        Route::get('appointments', [PortalAppointmentController::class, 'index'])->name('appointments.index');
+        Route::get('appointments/book', [PortalAppointmentController::class, 'create'])->name('appointments.create');
+        Route::post('appointments', [PortalAppointmentController::class, 'store'])->name('appointments.store');
+        Route::patch('appointments/{appointment}/cancel', [PortalAppointmentController::class, 'cancel'])->name('appointments.cancel');
+
+        Route::get('invoices', [PortalInvoiceController::class, 'index'])->name('invoices.index');
+        Route::get('invoices/{invoice}', [PortalInvoiceController::class, 'show'])->name('invoices.show');
+        Route::get('invoices/{invoice}/pdf', [PortalInvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
+
+        Route::get('profile', [PortalProfileController::class, 'show'])->name('profile');
+        Route::patch('profile', [PortalProfileController::class, 'update'])->name('profile.update');
+    });
+
 // ── Tenant-scoped authenticated routes ──────────────────────────────────────
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
-    Route::redirect('/', '/dashboard');
 
     // ── Phase 2 + 3: Admin-only management (tenant-admin role required) ─────
     Route::middleware('role:tenant-admin')
@@ -82,6 +121,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('permission:patients.view')
         ->group(function () {
             Route::resource('patients', PatientController::class);
+            Route::post('patients/{patient}/portal-account', [PatientPortalAccountController::class, 'store'])
+                ->name('patients.portal-account.store');
+            Route::delete('patients/{patient}/portal-account', [PatientPortalAccountController::class, 'destroy'])
+                ->name('patients.portal-account.destroy');
         });
 
     // ── Phase 2: Appointments ────────────────────────────────────────────────
@@ -134,6 +177,46 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('permission:stock-movements.view')
         ->group(function () {
             Route::get('stock-movements', [StockMovementController::class, 'index'])->name('stock-movements.index');
+        });
+
+    // ── Phase 5: Analytics ───────────────────────────────────────────────────
+    Route::middleware('permission:reports.view')
+        ->group(function () {
+            Route::get('analytics', AnalyticsDashboardController::class)->name('analytics.dashboard');
+        });
+
+    // ── Phase 5: Invoices ─────────────────────────────────────────────────────
+    // create/store must come before {invoice} to prevent 'create' being matched as a parameter
+    Route::middleware('permission:invoices.create')
+        ->group(function () {
+            Route::get('invoices/create', [InvoiceController::class, 'create'])->name('invoices.create');
+            Route::post('invoices', [InvoiceController::class, 'store'])->name('invoices.store');
+        });
+
+    Route::middleware('permission:invoices.view')
+        ->group(function () {
+            Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+            Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+            Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
+        });
+
+    Route::middleware('permission:invoices.edit')
+        ->group(function () {
+            Route::post('invoices/{invoice}/lines', [InvoiceController::class, 'addLine'])->name('invoices.lines.store');
+            Route::patch('invoices/{invoice}/finalize', [InvoiceController::class, 'finalize'])->name('invoices.finalize');
+            Route::post('invoices/{invoice}/payments', [InvoiceController::class, 'recordPayment'])->name('invoices.payments.store');
+        });
+
+    // ── Phase 5: Claims ───────────────────────────────────────────────────────
+    Route::middleware('permission:claims.view')
+        ->group(function () {
+            Route::get('claims', [ClaimController::class, 'index'])->name('claims.index');
+        });
+
+    Route::middleware('permission:claims.create')
+        ->group(function () {
+            Route::post('claims', [ClaimController::class, 'store'])->name('claims.store');
+            Route::patch('claims/{claim}/status', [ClaimController::class, 'updateStatus'])->name('claims.update-status');
         });
 
     // ── Phase 4: Bed Board ────────────────────────────────────────────────────

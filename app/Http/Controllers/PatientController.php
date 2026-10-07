@@ -54,6 +54,7 @@ class PatientController extends Controller
 
         $patient->load([
             'department',
+            'portalUser:id,email',
             'encounters' => fn ($q) => $q
                 ->with(['clinicalNotes', 'vitals', 'encounterDiagnoses.diagnosis', 'attendingDoctor'])
                 ->orderBy('encounter_date', 'desc')

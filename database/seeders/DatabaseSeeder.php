@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
                 DemoTenantSeeder::class,
                 PharmacySeeder::class,
                 BedSeeder::class,
+                BillingSeeder::class,
             ]);
         }
     }

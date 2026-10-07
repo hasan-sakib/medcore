@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import { StatusBadge } from '@/Components/StatusBadge';
@@ -15,6 +15,17 @@ type Tab = 'demographics' | 'encounters' | 'appointments';
 
 export default function Show({ patient, appointments, encounters }: Props) {
     const [tab, setTab] = useState<Tab>('demographics');
+    const portalForm = useForm({});
+
+    const createPortalAccount = () => {
+        if (!confirm('Create a patient portal account? A temporary password will be shown.')) return;
+        portalForm.post(`/patients/${patient.id}/portal-account`, { preserveScroll: true });
+    };
+
+    const deletePortalAccount = () => {
+        if (!confirm('Delete this patient\'s portal account? They will lose access immediately.')) return;
+        portalForm.delete(`/patients/${patient.id}/portal-account`, { preserveScroll: true });
+    };
 
     const tabClass = (t: Tab) =>
         `px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
@@ -44,6 +55,25 @@ export default function Show({ patient, appointments, encounters }: Props) {
                             >
                                 Edit
                             </Link>
+                        </Can>
+                        <Can permission="patients.view">
+                            {patient.portal_user ? (
+                                <button
+                                    onClick={deletePortalAccount}
+                                    disabled={portalForm.processing}
+                                    className="rounded border border-red-300 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
+                                >
+                                    Revoke Portal Access
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={createPortalAccount}
+                                    disabled={portalForm.processing}
+                                    className="rounded border border-emerald-300 px-3 py-1.5 text-sm text-emerald-700 hover:bg-emerald-50 disabled:opacity-50"
+                                >
+                                    Create Portal Account
+                                </button>
+                            )}
                         </Can>
                         <Can permission="appointments.create">
                             <Link

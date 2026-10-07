@@ -40,10 +40,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'super-admin' => EnsureSuperAdmin::class,
+            'patient-portal' => \App\Http\Middleware\EnsurePatientPortalUser::class,
+            'central-only' => \App\Http\Middleware\EnsureCentralDomain::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+        $exceptions->render(function (NotFoundHttpException $_, Request $request) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Not found.'], 404);
             }
